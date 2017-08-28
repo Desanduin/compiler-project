@@ -16,12 +16,9 @@ int main(int argc, char *argv[]) {
 			return 1;
 		} else {
 			ntoken = yylex();
+			printf("Category\tText\tLineno\tFilename\tIval/Sval\t\n");
 			while (ntoken){
-				printf("Category\tText\tLineno\tFilename\tIval/Sval\t\n");
-				printf("%d\t\t%s\t%d\t\n", ntoken, yytext, yylineno);
-				printf("text string of the token: %s\n", yytext);
-				printf("int value of the token: %d\n", ntoken);
-				printf("line number of token: %d\n", yylineno);
+				printf("%d\t\t%s\t%d\t\n", ntoken, yytext, node.lineno);
 				ntoken = yylex();
 			}
 			fclose(yyin);

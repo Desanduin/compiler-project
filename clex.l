@@ -16,10 +16,11 @@ LIT      \"(\\.|[^\\"])*\"
 #include <stdlib.h>
 #include <ctype.h>
 #include "ytab.h"
-
+#include "structset.h"
 
 void lexerr(char *s);
 void handle_include();
+int tokenset(int token);
 
 /* #define DEBUG */
 
@@ -66,7 +67,7 @@ FILE *saved_yyin;
 "volatile"              { return VOLATILE; }
 "while"                 { return WHILE; }
 
-{L}({L}|{D})*           { return IDENTIFIER; }
+{L}({L}|{D})*           { return tokenset(IDENTIFIER); }
 
 
 0[xX]{H}+{IS}?          { lexerr("Hex not supported\n"); }
@@ -168,4 +169,7 @@ void handle_include()
    }
 }
 
-
+int tokenset(int tokenvalue){
+node.lineno = yylineno;
+return tokenvalue;
+}
