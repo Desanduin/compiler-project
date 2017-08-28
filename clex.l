@@ -1,3 +1,5 @@
+/* yanked from http://www2.cs.uidaho.edu/~jeffery/courses/445/clex.l
+slightly adjusted to fit course requirements */
 O        [0-7]
 D        [0-9]
 L        [a-zA-Z_]
