@@ -15,10 +15,11 @@ int main(int argc, char *argv[]) {
 			printf("Can't open %s\n", *argv);
 			return 1;
 		} else {
+			node.filename = argv[1];
 			ntoken = yylex();
 			printf("Category\tText\tLineno\tFilename\tIval/Sval\t\n");
 			while (ntoken){
-				printf("%d\t\t%s\t%d\t\n", ntoken, yytext, node.lineno);
+				printf("%d\t\t%s\t%d\t%s\t\n", ntoken, node.text, node.lineno, node.filename);
 				ntoken = yylex();
 			}
 			fclose(yyin);

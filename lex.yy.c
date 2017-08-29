@@ -958,157 +958,157 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 38 "clex.l"
-{ return BREAK; }
+{ return tokenset(BREAK); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 39 "clex.l"
-{ return CASE; }
+{ return tokenset(CASE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 40 "clex.l"
-{ return CHAR; }
+{ return tokenset(CHAR); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 41 "clex.l"
-{ return CONST; }
+{ return tokenset(CONST); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 42 "clex.l"
-{ return CONTINUE; }
+{ return tokenset(CONTINUE); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 43 "clex.l"
-{ return DEFAULT; }
+{ return tokenset(DEFAULT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 44 "clex.l"
-{ return DO; }
+{ return tokenset(DO); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 45 "clex.l"
-{ return DOUBLE; }
+{ return tokenset(DOUBLE); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 46 "clex.l"
-{ return ELSE; }
+{ return tokenset(ELSE); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 47 "clex.l"
-{ return ENUM; }
+{ return tokenset(ENUM); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 48 "clex.l"
-{ return EXTERN; }
+{ return tokenset(EXTERN); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 49 "clex.l"
-{ return FLOAT; }
+{ return tokenset(FLOAT); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 50 "clex.l"
-{ return FOR; }
+{ return tokenset(FOR); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 51 "clex.l"
-{ return GOTO; }
+{ return tokenset(GOTO); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 52 "clex.l"
-{ return IF; }
+{ return tokenset(IF); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 53 "clex.l"
-{ return INT; }
+{ return tokenset(INT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 54 "clex.l"
-{ return LONG; }
+{ return tokenset(LONG); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 55 "clex.l"
-{ return REGISTER; }
+{ return tokenset(REGISTER); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 56 "clex.l"
-{ return RETURN; }
+{ return tokenset(RETURN); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 57 "clex.l"
-{ return SHORT; }
+{ return tokenset(SHORT); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 58 "clex.l"
-{ return SIGNED; }
+{ return tokenset(SIGNED); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 59 "clex.l"
-{ return SIZEOF; }
+{ return tokenset(SIZEOF); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 60 "clex.l"
-{ return STATIC; }
+{ return tokenset(STATIC); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 61 "clex.l"
-{ return STRUCT; }
+{ return tokenset(STRUCT); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 62 "clex.l"
-{ return SWITCH; }
+{ return tokenset(SWITCH); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 63 "clex.l"
-{ return TYPEDEF; }
+{ return tokenset(TYPEDEF); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 64 "clex.l"
-{ return UNION; }
+{ return tokenset(UNION); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 65 "clex.l"
-{ return UNSIGNED; }
+{ return tokenset(UNSIGNED); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 66 "clex.l"
-{ return VOID; }
+{ return tokenset(VOID); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 67 "clex.l"
-{ return VOLATILE; }
+{ return tokenset(VOLATILE); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 68 "clex.l"
-{ return WHILE; }
+{ return tokenset(WHILE); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
@@ -1128,34 +1128,34 @@ YY_RULE_SETUP
 case 37:
 YY_RULE_SETUP
 #line 77 "clex.l"
-{ return ICON; }
+{ return tokenset(ICON); }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
 #line 79 "clex.l"
-{ return CCON; }
+{ return tokenset(CCON); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 81 "clex.l"
-{ return FCON; }
+{ return tokenset(FCON); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 82 "clex.l"
-{ return FCON; }
+{ return tokenset(FCON); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 83 "clex.l"
-{ return FCON; }
+{ return tokenset(FCON); }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
 #line 85 "clex.l"
-{ return STRING; }
+{ return tokenset(STRING); }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
@@ -1171,227 +1171,227 @@ YY_RULE_SETUP
 case 45:
 YY_RULE_SETUP
 #line 91 "clex.l"
-{ return SRASN; }
+{ return tokenset(SRASN); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 92 "clex.l"
-{ return SLASN; }
+{ return tokenset(SLASN); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 93 "clex.l"
-{ return PLASN; }
+{ return tokenset(PLASN); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 94 "clex.l"
-{ return MIASN; }
+{ return tokenset(MIASN); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 95 "clex.l"
-{ return MUASN; }
+{ return tokenset(MUASN); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
 #line 96 "clex.l"
-{ return DIASN; }
+{ return tokenset(DIASN); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
 #line 97 "clex.l"
-{ return MOASN; }
+{ return tokenset(MOASN); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
 #line 98 "clex.l"
-{ return ANASN; }
+{ return tokenset(ANASN); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
 #line 99 "clex.l"
-{ return ERASN; }
+{ return tokenset(ERASN); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
 #line 100 "clex.l"
-{ return ORASN; }
+{ return tokenset(ORASN); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
 #line 101 "clex.l"
-{ return SHR; }
+{ return tokenset(SHR); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
 #line 102 "clex.l"
-{ return SHL; }
+{ return tokenset(SHL); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
 #line 103 "clex.l"
-{ return INCOP; }
+{ return tokenset(INCOP); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
 #line 104 "clex.l"
-{ return DECOP; }
+{ return tokenset(DECOP); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
 #line 105 "clex.l"
-{ return FOLLOW; }
+{ return tokenset(FOLLOW); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
 #line 106 "clex.l"
-{ return ANDAND; }
+{ return tokenset(ANDAND); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
 #line 107 "clex.l"
-{ return OROR; }
+{ return tokenset(OROR); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
 #line 108 "clex.l"
-{ return LE; }
+{ return tokenset(LE); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
 #line 109 "clex.l"
-{ return GE; }
+{ return tokenset(GE); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
 #line 110 "clex.l"
-{ return EQ; }
+{ return tokenset(EQ); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
 #line 111 "clex.l"
-{ return NE; }
+{ return tokenset(NE); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
 #line 112 "clex.l"
-{ return SM; }
+{ return tokenset(SM); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
 #line 113 "clex.l"
-{ return LC; }
+{ return tokenset(LC); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
 #line 114 "clex.l"
-{ return RC; }
+{ return tokenset(RC); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
 #line 115 "clex.l"
-{ return CM; }
+{ return tokenset(CM); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
 #line 116 "clex.l"
-{ return COLON; }
+{ return tokenset(COLON); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
 #line 117 "clex.l"
-{ return ASN; }
+{ return tokenset(ASN); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
 #line 118 "clex.l"
-{ return LP; }
+{ return tokenset(LP); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
 #line 119 "clex.l"
-{ return RP; }
+{ return tokenset(RP); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
 #line 120 "clex.l"
-{ return LB; }
+{ return tokenset(LB); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
 #line 121 "clex.l"
-{ return RB; }
+{ return tokenset(RB); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
 #line 122 "clex.l"
-{ return DOT; }
+{ return tokenset(DOT); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
 #line 123 "clex.l"
-{ return AND; }
+{ return tokenset(AND); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
 #line 124 "clex.l"
-{ return BANG; }
+{ return tokenset(BANG); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
 #line 125 "clex.l"
-{ return NOT; }
+{ return tokenset(NOT); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
 #line 126 "clex.l"
-{ return MINUS; }
+{ return tokenset(MINUS); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
 #line 127 "clex.l"
-{ return PLUS; }
+{ return tokenset(PLUS); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
 #line 128 "clex.l"
-{ return MUL; }
+{ return tokenset(MUL); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
 #line 129 "clex.l"
-{ return DIV; }
+{ return tokenset(DIV); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
 #line 130 "clex.l"
-{ return MOD; }
+{ return tokenset(MOD); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
 #line 131 "clex.l"
-{ return LT; }
+{ return tokenset(LT); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
 #line 132 "clex.l"
-{ return GT; }
+{ return tokenset(GT); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
 #line 133 "clex.l"
-{ return ER; }
+{ return tokenset(ER); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
 #line 134 "clex.l"
-{ return OR; }
+{ return tokenset(OR); }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
 #line 135 "clex.l"
-{ return QUEST; }
+{ return tokenset(QUEST); }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
@@ -2405,13 +2405,13 @@ void yyfree (void * ptr )
 
 void lexerr(char *s)
 {
-	errors++;
+        errors++;
 
-	fprintf(stderr, "%s: lexical error", s);
+        fprintf(stderr, "%s: lexical error", s);
 
-	/* to do: add mechanism for reporting file name and line number */
+        /* to do: add mechanism for reporting file name and line number */
 
-	fprintf(stderr, ", token = \"%s\"\n", yytext);
+        fprintf(stderr, ", token = \"%s\"\n", yytext);
 }
 
 /*
@@ -2439,6 +2439,8 @@ void handle_include()
 
 int tokenset(int tokenvalue){
 node.lineno = yylineno;
+node.text = yytext;
 return tokenvalue;
 }
+
 

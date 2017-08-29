@@ -35,37 +35,37 @@ FILE *saved_yyin;
 \n                      { yylineno++; }
 [ \t\f]+                { }
 
-"break"                 { return BREAK; }
-"case"                  { return CASE; }
-"char"                  { return CHAR; }
-"const"                 { return CONST; }
-"continue"              { return CONTINUE; }
-"default"               { return DEFAULT; }
-"do"                    { return DO; }
-"double"                { return DOUBLE; }
-"else"                  { return ELSE; }
-"enum"                  { return ENUM; }
-"extern"                { return EXTERN; }
-"float"                 { return FLOAT; }
-"for"                   { return FOR; }
-"goto"                  { return GOTO; }
-"if"                    { return IF; }
-"int"                   { return INT; }
-"long"                  { return LONG; }
-"register"              { return REGISTER; }
-"return"                { return RETURN; }
-"short"                 { return SHORT; }
-"signed"                { return SIGNED; }
-"sizeof"                { return SIZEOF; }
-"static"                { return STATIC; }
-"struct"                { return STRUCT; }
-"switch"                { return SWITCH; }
-"typedef"               { return TYPEDEF; }
-"union"                 { return UNION; }
-"unsigned"              { return UNSIGNED; }
-"void"                  { return VOID; }
-"volatile"              { return VOLATILE; }
-"while"                 { return WHILE; }
+"break"                 { return tokenset(BREAK); }
+"case"                  { return tokenset(CASE); }
+"char"                  { return tokenset(CHAR); }
+"const"                 { return tokenset(CONST); }
+"continue"              { return tokenset(CONTINUE); }
+"default"               { return tokenset(DEFAULT); }
+"do"                    { return tokenset(DO); }
+"double"                { return tokenset(DOUBLE); }
+"else"                  { return tokenset(ELSE); }
+"enum"                  { return tokenset(ENUM); }
+"extern"                { return tokenset(EXTERN); }
+"float"                 { return tokenset(FLOAT); }
+"for"                   { return tokenset(FOR); }
+"goto"                  { return tokenset(GOTO); }
+"if"                    { return tokenset(IF); }
+"int"                   { return tokenset(INT); }
+"long"                  { return tokenset(LONG); }
+"register"              { return tokenset(REGISTER); }
+"return"                { return tokenset(RETURN); }
+"short"                 { return tokenset(SHORT); }
+"signed"                { return tokenset(SIGNED); }
+"sizeof"                { return tokenset(SIZEOF); }
+"static"                { return tokenset(STATIC); }
+"struct"                { return tokenset(STRUCT); }
+"switch"                { return tokenset(SWITCH); }
+"typedef"               { return tokenset(TYPEDEF); }
+"union"                 { return tokenset(UNION); }
+"unsigned"              { return tokenset(UNSIGNED); }
+"void"                  { return tokenset(VOID); }
+"volatile"              { return tokenset(VOLATILE); }
+"while"                 { return tokenset(WHILE); }
 
 {L}({L}|{D})*           { return tokenset(IDENTIFIER); }
 
@@ -74,76 +74,76 @@ FILE *saved_yyin;
 
 0{O}+{IS}?              { lexerr("Octal not supported\n"); }
 
-{D}+{IS}?               { return ICON; }
+{D}+{IS}?               { return tokenset(ICON); }
 
-'(\\.|[^\\'])+'         { return CCON; }
+'(\\.|[^\\'])+'         { return tokenset(CCON); }
 
-{D}+{E}{FS}?            { return FCON; }
-{D}*"."{D}+({E})?{FS}?  { return FCON; }
-{D}+"."{D}*({E})?{FS}?  { return FCON; }
+{D}+{E}{FS}?            { return tokenset(FCON); }
+{D}*"."{D}+({E})?{FS}?  { return tokenset(FCON); }
+{D}+"."{D}*({E})?{FS}?  { return tokenset(FCON); }
 
-{LIT}                   { return STRING; }
+{LIT}                   { return tokenset(STRING); }
 
 "#include"[ ]*\"[^\\"]+\"  { handle_include(); }
 
 "#include <iostream>"   { included_iostream = 1; }
 
-">>="                   { return SRASN; }
-"<<="                   { return SLASN; }
-"+="                    { return PLASN; }
-"-="                    { return MIASN; }
-"*="                    { return MUASN; }
-"/="                    { return DIASN; }
-"%="                    { return MOASN; }
-"&="                    { return ANASN; }
-"^="                    { return ERASN; }
-"|="                    { return ORASN; }
-">>"                    { return SHR; }
-"<<"                    { return SHL; }
-"++"                    { return INCOP; }
-"--"                    { return DECOP; }
-"->"                    { return FOLLOW; }
-"&&"                    { return ANDAND; }
-"||"                    { return OROR; }
-"<="                    { return LE; }
-">="                    { return GE; }
-"=="                    { return EQ; }
-"!="                    { return NE; }
-";"                     { return SM; }
-"{"                     { return LC; }
-"}"                     { return RC; }
-","                     { return CM; }
-":"                     { return COLON; }
-"="                     { return ASN; }
-"("                     { return LP; }
-")"                     { return RP; }
-"["                     { return LB; }
-"]"                     { return RB; }
-"."                     { return DOT; }
-"&"                     { return AND; }
-"!"                     { return BANG; }
-"~"                     { return NOT; }
-"-"                     { return MINUS; }
-"+"                     { return PLUS; }
-"*"                     { return MUL; }
-"/"                     { return DIV; }
-"%"                     { return MOD; }
-"<"                     { return LT; }
-">"                     { return GT; }
-"^"                     { return ER; }
-"|"                     { return OR; }
-"?"                     { return QUEST; }
+">>="                   { return tokenset(SRASN); }
+"<<="                   { return tokenset(SLASN); }
+"+="                    { return tokenset(PLASN); }
+"-="                    { return tokenset(MIASN); }
+"*="                    { return tokenset(MUASN); }
+"/="                    { return tokenset(DIASN); }
+"%="                    { return tokenset(MOASN); }
+"&="                    { return tokenset(ANASN); }
+"^="                    { return tokenset(ERASN); }
+"|="                    { return tokenset(ORASN); }
+">>"                    { return tokenset(SHR); }
+"<<"                    { return tokenset(SHL); }
+"++"                    { return tokenset(INCOP); }
+"--"                    { return tokenset(DECOP); }
+"->"                    { return tokenset(FOLLOW); }
+"&&"                    { return tokenset(ANDAND); }
+"||"                    { return tokenset(OROR); }
+"<="                    { return tokenset(LE); }
+">="                    { return tokenset(GE); }
+"=="                    { return tokenset(EQ); }
+"!="                    { return tokenset(NE); }
+";"                     { return tokenset(SM); }
+"{"                     { return tokenset(LC); }
+"}"                     { return tokenset(RC); }
+","                     { return tokenset(CM); }
+":"                     { return tokenset(COLON); }
+"="                     { return tokenset(ASN); }
+"("                     { return tokenset(LP); }
+")"                     { return tokenset(RP); }
+"["                     { return tokenset(LB); }
+"]"                     { return tokenset(RB); }
+"."                     { return tokenset(DOT); }
+"&"                     { return tokenset(AND); }
+"!"                     { return tokenset(BANG); }
+"~"                     { return tokenset(NOT); }
+"-"                     { return tokenset(MINUS); }
+"+"                     { return tokenset(PLUS); }
+"*"                     { return tokenset(MUL); }
+"/"                     { return tokenset(DIV); }
+"%"                     { return tokenset(MOD); }
+"<"                     { return tokenset(LT); }
+">"                     { return tokenset(GT); }
+"^"                     { return tokenset(ER); }
+"|"                     { return tokenset(OR); }
+"?"                     { return tokenset(QUEST); }
 %%
 
 void lexerr(char *s)
 {
-	errors++;
+        errors++;
 
-	fprintf(stderr, "%s: lexical error", s);
+        fprintf(stderr, "%s: lexical error", s);
 
-	/* to do: add mechanism for reporting file name and line number */
+        /* to do: add mechanism for reporting file name and line number */
 
-	fprintf(stderr, ", token = \"%s\"\n", yytext);
+        fprintf(stderr, ", token = \"%s\"\n", yytext);
 }
 
 /*
@@ -171,5 +171,7 @@ void handle_include()
 
 int tokenset(int tokenvalue){
 node.lineno = yylineno;
+node.text = yytext;
 return tokenvalue;
 }
+
