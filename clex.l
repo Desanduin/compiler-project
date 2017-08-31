@@ -170,8 +170,8 @@ void handle_include()
 }
 
 int tokenset(int tokenvalue){
-node.lineno = yylineno;
-node.text = yytext;
+token.lineno = yylineno;
+token.text = yytext;
 return tokenvalue;
 }
 
