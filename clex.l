@@ -23,7 +23,6 @@ void handle_include();
 int tokenset(int token);
 
 /* #define DEBUG */
-
 int line_num = 1;
 int errors;
 int included_iostream = 0;
@@ -170,6 +169,8 @@ void handle_include()
 }
 
 int tokenset(int tokenvalue){
+tokenlist.t = (struct token*)malloc(sizeof(struct token));
+token.category = tokenvalue;
 token.lineno = yylineno;
 token.text = yytext;
 return tokenvalue;
