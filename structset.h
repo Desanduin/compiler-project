@@ -7,7 +7,8 @@ struct token {
    int *sval;      /* if you had a string constant, malloc space and store */
    }token;               /*    the string (less quotes and after escapes) here */
 
-struct tokenlist {
-      struct token *t;
-      struct tokenlist *next;
+typedef struct tokenl {
+      struct token t;
+      struct tokenl *next;
       }tokenlist;
+

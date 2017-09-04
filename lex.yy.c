@@ -2438,6 +2438,8 @@ void handle_include()
 
 int tokenset(int tokenvalue){
 tokenlist.t = (struct token*)malloc(sizeof(struct token));
+
+token.ival = atoi(yytext);
 token.category = tokenvalue;
 token.lineno = yylineno;
 token.text = yytext;
