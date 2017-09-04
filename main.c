@@ -39,16 +39,17 @@ int main(int argc, char *argv[]) {
 void print(tokenlist *head) {
 	tokenlist *current = NULL;
 	current = malloc(sizeof(tokenlist));
-	current->t = token;
+	current = head;
 	while (current != NULL) {
-		printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
+		//printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
+		printf("%d\t%s\n", current->t.category, current->t.text);
 		current = current->next;
 	}
 }
 void push(tokenlist *head){
-	tokenlist *current = NULL;
-	current = malloc(sizeof(tokenlist));
-	current->t = token;
+	tokenlist *current;
+	//current = malloc(sizeof(tokenlist));
+	current = head;
 	while (current->next != NULL) {
 		current = current->next;	
 	}
