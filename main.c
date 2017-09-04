@@ -6,11 +6,12 @@ extern FILE *yyin;
 extern int yylineno;
 extern char *yytext;
 extern int yylex();
-void print();
-void push();
+void print(tokenlist *);
+void push(tokenlist *);
 int main(int argc, char *argv[]) {
 	int ntoken = 0;
-	
+	tokenlist *head = NULL;
+	head = malloc(sizeof(tokenlist));
 	if (argc == 0) {
 		printf("Please provide an input file");
 		return 0;
@@ -20,30 +21,33 @@ int main(int argc, char *argv[]) {
 			return 1;
 		} else {
 			token.filename = argv[1];
-			ntoken = yylex();	
+			ntoken = yylex();
+			head->t = token;
 			printf("Category\tText\t\tLineno\tFilename\tIval/Sval\t\n");
 			while (ntoken){
-				push();
+				push(head);
+				head->t = token;
 				ntoken = yylex();
 			}
-			print();
+			print(head);
 			fclose(yyin);
 		}
 		return 0;
 	}
 }
 
-void print() {
-	tokenlist *current;
+void print(tokenlist *head) {
+	tokenlist *current = NULL;
+	current = malloc(sizeof(tokenlist));
 	current->t = token;
 	while (current != NULL) {
 		printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
 		current = current->next;
-		printf("hi\n");
 	}
 }
-void push(){
-	tokenlist *current;
+void push(tokenlist *head){
+	tokenlist *current = NULL;
+	current = malloc(sizeof(tokenlist));
 	current->t = token;
 	while (current->next != NULL) {
 		current = current->next;	
