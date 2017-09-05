@@ -6,12 +6,16 @@ extern FILE *yyin;
 extern int yylineno;
 extern char *yytext;
 extern int yylex();
-void print(tokenlist *);
-void push(tokenlist *);
+void print();
+void push();
+struct tokenl *head;
+struct tokenl *current;
 int main(int argc, char *argv[]) {
 	int ntoken = 0;
-	tokenlist *head = NULL;
+	head = NULL;
+	current = NULL;
 	head = malloc(sizeof(tokenlist));
+	current = malloc(sizeof(tokenlist));
 	if (argc == 0) {
 		printf("Please provide an input file");
 		return 0;
@@ -25,20 +29,17 @@ int main(int argc, char *argv[]) {
 			head->t = token;
 			printf("Category\tText\t\tLineno\tFilename\tIval/Sval\t\n");
 			while (ntoken){
-				push(head);
-				head->t = token;
+				push();
 				ntoken = yylex();
 			}
-			print(head);
+			print();
 			fclose(yyin);
 		}
 		return 0;
 	}
 }
 
-void print(tokenlist *head) {
-	tokenlist *current = NULL;
-	current = malloc(sizeof(tokenlist));
+void print() {
 	current = head;
 	while (current != NULL) {
 		//printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
@@ -46,14 +47,13 @@ void print(tokenlist *head) {
 		current = current->next;
 	}
 }
-void push(tokenlist *head){
-	tokenlist *current;
-	//current = malloc(sizeof(tokenlist));
+void push(){
 	current = head;
 	while (current->next != NULL) {
 		current = current->next;	
 	}
 	current->next = malloc(sizeof(tokenlist));
-	current->next->t = token;
-	current->next->next = NULL;
+	current->t = token;
+	printf("%d\t%s\n", current->t.category, current->t.text);
+	current = current->next;
 }
