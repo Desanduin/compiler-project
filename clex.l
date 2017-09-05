@@ -172,7 +172,7 @@ int tokenset(int tokenvalue){
 token.ival = atoi(yytext);
 token.category = tokenvalue;
 token.lineno = yylineno;
-token.text = yytext;
+token.text = strdup(yytext);
 return tokenvalue;
 }
 
