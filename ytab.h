@@ -10,7 +10,7 @@
 #define DOUBLE 266
 #define ELSE 267
 #define ENUM 268
-#define EXTERN 269
+#define COMMENT 269
 #define FLOAT 270
 #define FOR 271
 #define GOTO 272
@@ -83,3 +83,4 @@
 #define IDENTIFIER 339
 #define TYPEDEF_NAME 340
 #define BAD_TOKEN 341
+#define INCLUDE 342

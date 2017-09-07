@@ -1,7 +1,9 @@
+
 #include "ytab.h"
 #include "structset.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 extern FILE *yyin;
 extern int yylineno;
 extern char *yytext;
@@ -28,12 +30,12 @@ int main(int argc, char *argv[]) {
 			token.filename = *argv;
 			ntoken = yylex();
 			head->t = token;
-			printf("Category\tText\t\tLineno\tFilename\tIval/Sval\t\n");
 			while (ntoken){
 				push();
 				ntoken = yylex();
 			}
 			print();
+			yylineno = 1;
 			fclose(yyin);
 		}
 		}
@@ -43,9 +45,27 @@ int main(int argc, char *argv[]) {
 
 void print() {
 	current = head;
+	char *buffer;
+	printf("Category\tText\tLineno\tFilename\tIval/Sval\n");
 	while (current->next != NULL) {
-		printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
-		//printf("%d\t%s\n", current->t.category, current->t.text);
+		current->t.sval = malloc(strlen(current->t.text)+1);
+		buffer = malloc(strlen(current->t.text)+1);
+		// we know that category 293 is a STRING constant
+		if (current->t.category == 293){
+			strcpy(current->t.sval, current->t.text);
+			current->t.sval = strchr(current->t.sval, '\"')+1;
+			printf("%s\n", buffer);
+			current->t.sval[strlen(current->t.sval)-1] = '\0';
+			buffer = strpbrk(current->t.sval, "\n\\\'");
+			printf("%s\n", buffer);
+			printf("%d\t\t%10s\t%10d\t%10s\t%s\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.sval);
+		} else if (current->t.category == 290){
+			current->t.ival = atoi(current->t.text);
+			printf("%d\t\t%10s\t%10d\t%10s\t%d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
+		} else {
+		//current->t.sval = realloc(current->t.sval, strlen(current->t.sval)+1);
+		printf("%d\t\t%10s\t%10d\t%10s\t\n", current->t.category, current->t.text, current->t.lineno, current->t.filename);
+		}
 		current = current->next;
 	}
 }
@@ -56,6 +76,5 @@ void push(){
 	}
 	current->next = malloc(sizeof(tokenlist));
 	current->t = token;
-	//printf("%d\t%s\n", current->t.category, current->t.text);
 	current = current->next;
 }

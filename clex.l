@@ -9,8 +9,10 @@ FS       (f|F|l|L)
 IS       (u|U|l|L)
 W        [ \t\f]*
 LIT      \"(\\.|[^\\"])*\"
+COMMENT  \/\*(\*(\/)|[^*])*\*\/|\/\/.*
 
 %{
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,9 +25,8 @@ void handle_include();
 int tokenset(int token);
 
 /* #define DEBUG */
-int line_num = 1;
 int errors;
-int included_iostream = 0;
+int system_include = 0;
 FILE *saved_yyin;
 %}
 
@@ -33,7 +34,7 @@ FILE *saved_yyin;
 
 \n                      { yylineno++; }
 [ \t\f]+                { }
-
+<<EOF>>			{eof++; return 0;}
 "break"                 { return tokenset(BREAK); }
 "case"                  { return tokenset(CASE); }
 "char"                  { return tokenset(CHAR); }
@@ -43,31 +44,25 @@ FILE *saved_yyin;
 "do"                    { return tokenset(DO); }
 "double"                { return tokenset(DOUBLE); }
 "else"                  { return tokenset(ELSE); }
-"enum"                  { return tokenset(ENUM); }
-"extern"                { return tokenset(EXTERN); }
 "float"                 { return tokenset(FLOAT); }
 "for"                   { return tokenset(FOR); }
 "goto"                  { return tokenset(GOTO); }
 "if"                    { return tokenset(IF); }
 "int"                   { return tokenset(INT); }
 "long"                  { return tokenset(LONG); }
-"register"              { return tokenset(REGISTER); }
 "return"                { return tokenset(RETURN); }
 "short"                 { return tokenset(SHORT); }
 "signed"                { return tokenset(SIGNED); }
 "sizeof"                { return tokenset(SIZEOF); }
-"static"                { return tokenset(STATIC); }
 "struct"                { return tokenset(STRUCT); }
 "switch"                { return tokenset(SWITCH); }
 "typedef"               { return tokenset(TYPEDEF); }
 "union"                 { return tokenset(UNION); }
 "unsigned"              { return tokenset(UNSIGNED); }
 "void"                  { return tokenset(VOID); }
-"volatile"              { return tokenset(VOLATILE); }
 "while"                 { return tokenset(WHILE); }
 
 {L}({L}|{D})*           { return tokenset(IDENTIFIER); }
-
 
 0[xX]{H}+{IS}?          { lexerr("Hex not supported\n"); }
 
@@ -83,9 +78,16 @@ FILE *saved_yyin;
 
 {LIT}                   { return tokenset(STRING); }
 
-"#include"[ ]*\"[^\\"]+\"  { handle_include(); }
+{COMMENT}		{ }
 
-"#include <iostream>"   { included_iostream = 1; }
+"#include"[ ]*\"[^\\"]+\"  { handle_include();}
+
+"#include <iostream>"   { system_include = 1; handle_include();}
+"#include <fstream>"	{ system_include = 1; handle_include();}
+"#include <string>"	{ system_include = 1; handle_include();}
+"#include <cstdlib>"	{ system_include = 1; handle_include();}
+"#include <ctime>"	{ system_include = 1; handle_include();}
+"#include <cmath>"	{ system_include = 1; handle_include();}
 
 ">>="                   { return tokenset(SRASN); }
 "<<="                   { return tokenset(SLASN); }
@@ -93,17 +95,15 @@ FILE *saved_yyin;
 "-="                    { return tokenset(MIASN); }
 "*="                    { return tokenset(MUASN); }
 "/="                    { return tokenset(DIASN); }
-"%="                    { return tokenset(MOASN); }
-"&="                    { return tokenset(ANASN); }
-"^="                    { return tokenset(ERASN); }
+"%="                   { return tokenset(MOASN); }
 "|="                    { return tokenset(ORASN); }
 ">>"                    { return tokenset(SHR); }
 "<<"                    { return tokenset(SHL); }
 "++"                    { return tokenset(INCOP); }
 "--"                    { return tokenset(DECOP); }
 "->"                    { return tokenset(FOLLOW); }
-"&&"                    { return tokenset(ANDAND); }
-"||"                    { return tokenset(OROR); }
+"&&"                    { return tokenset(AND); }
+"||"                    { return tokenset(OR); }
 "<="                    { return tokenset(LE); }
 ">="                    { return tokenset(GE); }
 "=="                    { return tokenset(EQ); }
@@ -119,7 +119,6 @@ FILE *saved_yyin;
 "["                     { return tokenset(LB); }
 "]"                     { return tokenset(RB); }
 "."                     { return tokenset(DOT); }
-"&"                     { return tokenset(AND); }
 "!"                     { return tokenset(BANG); }
 "~"                     { return tokenset(NOT); }
 "-"                     { return tokenset(MINUS); }
@@ -130,7 +129,6 @@ FILE *saved_yyin;
 "<"                     { return tokenset(LT); }
 ">"                     { return tokenset(GT); }
 "^"                     { return tokenset(ER); }
-"|"                     { return tokenset(OR); }
 "?"                     { return tokenset(QUEST); }
 %%
 
@@ -156,20 +154,26 @@ int yywrap()
 
 void handle_include()
 {
+   if (system_include == 1) {
+	printf("%s\n", strdup(yytext));
+   	system_include = 0;
+	yylineno = 0;
+   } else {
    char *newfilename = malloc(strlen(yytext)+1-strlen("#include \"\""));
    saved_yyin = yyin;
    char *fname = strchr(yytext, '\"')+1;
    fname[strlen(fname)-1] = '\0';
    // fprintf(stdout, "included filename '%s'\n", fname); fflush(stdout);
    yyin = fopen(fname,"r");
+   yylineno = 0;
    if (yyin == NULL) {
      lexerr("cannot open include file");
      exit(1);
    }
+   }
 }
 
 int tokenset(int tokenvalue){
-token.ival = atoi(yytext);
 token.category = tokenvalue;
 token.lineno = yylineno;
 token.text = strdup(yytext);
