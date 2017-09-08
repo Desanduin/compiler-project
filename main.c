@@ -57,25 +57,31 @@ void print() {
 			strcpy(current->t.sval, current->t.text);
 			current->t.sval = strchr(current->t.sval, '\"')+1;
 			current->t.sval[strlen(current->t.sval)-1] = '\0';
-			// buffer = strpbrk(current->t.sval, "\n\\\'");
-			// buffer = current->t.sval;
 			printf("%d%30s%30d%30s\t\t\t", current->t.category, current->t.text, current->t.lineno, current->t.filename);
 			for (int i = 0,j = 0; i < strlen(current->t.sval); i++) {	
 				if (current->t.sval[i] == '\\' && current->t.sval[i+1] == 'n') {
 					printf("\n\n");
 					i++;
-					//current->t.sval[i] = '\0';
-					//current->t.sval[i+1] = '\0';
 				} else if (current->t.sval[i] == '\\' && current->t.sval[i+1] == 't') {
 					printf("\t");
+					i++;
+				} else if (current->t.sval[i] == '\\' && current->t.sval[i+1] == '\'') {
+					printf("\'");
+					i++;
+				} else if (current->t.sval[i] == '\\' && current->t.sval[i+1] == '\\') {
+					printf("\\");
+					i++;
+				} else if (current->t.sval[i] == '\\' && current->t.sval[i+1] == '\"') {
+					printf("\"");
+					i++;
+				} else if (current->t.sval[i] == '\\' && current->t.sval[i+1] == '0') {
 					current->t.sval[i] = '\0';
-                                        current->t.sval[i+1] = '\0';
+					printf("\n");
 				} else {
 				buffer[i] = current->t.sval[i];
 				printf("%c", buffer[i]);	
 				}
 			}
-			//printf(@"%s\n", current->t.sval);
 		} else if (current->t.category == ICON){
 			current->t.ival = atoi(current->t.text);
 			printf("%d%30s%30d%30s%30d\n", current->t.category, current->t.text, current->t.lineno, current->t.filename, current->t.ival);
