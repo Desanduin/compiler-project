@@ -27,7 +27,6 @@ int tokenset(int token);
 /* #define DEBUG */
 int errors;
 int system_include = 0;
-FILE *saved_yyin;
 %}
 
 %%
@@ -161,10 +160,10 @@ void handle_include()
    } else {
    char *newfilename = malloc(strlen(yytext)+1-strlen("#include \"\""));
    saved_yyin = yyin;
-   char *fname = strchr(yytext, '\"')+1;
+   fname = strchr(yytext, '\"')+1;
    fname[strlen(fname)-1] = '\0';
-   // fprintf(stdout, "included filename '%s'\n", fname); fflush(stdout);
    yyin = fopen(fname,"r");
+   printf("%s\n", strdup(fname));
    yylineno = 0;
    if (yyin == NULL) {
      lexerr("cannot open include file");
