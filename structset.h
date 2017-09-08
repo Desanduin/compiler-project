@@ -1,4 +1,7 @@
 #include <stdio.h>
+// token and tokenl struct yanked from Dr. J's notes
+// some global varilables defined here for easy access
+
 struct token {
    int category;   /* the integer code returned by yylex */
    char *text;     /* the actual string (lexeme) matched */
@@ -14,5 +17,7 @@ typedef struct tokenl {
       struct tokenl *next;
       }tokenlist;
 char *fname;
+char *funame;
 FILE *saved_yyin;
 int eof;
+int user_include;

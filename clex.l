@@ -33,7 +33,6 @@ int system_include = 0;
 
 \n                      { yylineno++; }
 [ \t\f]+                { }
-<<EOF>>			{eof++; return 0;}
 "break"                 { return tokenset(BREAK); }
 "case"                  { return tokenset(CASE); }
 "char"                  { return tokenset(CHAR); }
@@ -134,11 +133,8 @@ int system_include = 0;
 void lexerr(char *s)
 {
         errors++;
-
         fprintf(stderr, "%s: lexical error", s);
-
         /* to do: add mechanism for reporting file name and line number */
-
         fprintf(stderr, ", token = \"%s\"\n", yytext);
 }
 
@@ -153,17 +149,17 @@ int yywrap()
 
 void handle_include()
 {
+   /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
    if (system_include == 1) {
 	printf("%s\n", strdup(yytext));
    	system_include = 0;
 	yylineno = 0;
    } else {
-   char *newfilename = malloc(strlen(yytext)+1-strlen("#include \"\""));
-   saved_yyin = yyin;
-   fname = strchr(yytext, '\"')+1;
-   fname[strlen(fname)-1] = '\0';
-   yyin = fopen(fname,"r");
-   printf("%s\n", strdup(fname));
+   //saved_yyin = yyin;
+   user_include++;
+   funame = strchr(yytext, '\"')+1;
+   funame[strlen(funame)-1] = '\0';
+   //yyin = fopen(fname,"r");
    yylineno = 0;
    if (yyin == NULL) {
      lexerr("cannot open include file");
@@ -172,6 +168,8 @@ void handle_include()
    }
 }
 
+// actually creates our token with the tokenvalue as input
+// note that .filename and .ival/.sval are not set here
 int tokenset(int tokenvalue){
 token.category = tokenvalue;
 token.lineno = yylineno;
