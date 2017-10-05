@@ -9,27 +9,35 @@ extern char *yytext;
 extern int yylex();
 extern int yyparse();
 int read(FILE *, int, char *);
-struct tokenl *head;
-struct tokenl *current;
 tree *savedTree = NULL;
+
+/*
+ * exit status: 
+ * 		(0) successful, no errors
+ * 		(1) lexical error, defined in clex.l
+ * 		(2) syntax error, defined in 120gram.y
+ * 		(3) "feature not supported" error, NYI
+*/
+
 int main(int argc, char *argv[]) {
 	depth = 0;
 	if (argc == 0) {
 		printf("Please provide an input file");
 		return 0;
 	} else {
-		user_include = 0;
-		/* NOTE, can currently only handle one header file per argc file. Expected flaw, will resolve by HW2 */
-		//while (--argc+user_include > 0) {
-		//if (user_include >= 1) {
-		//	read(yyin, argc, funame);
-		//	user_include--;
-		//} else {
 		fname = malloc(sizeof(*argv));
+		user_include = 0;
+		new_file = 0;
+		while (--argc+user_include > 0) {
+		if (user_include >= 1) {
+		new_file = 1;
+		read(yyin, argc, funame);
+		user_include--;
+		} else {
 		fname = *++argv;
 		read(yyin, argc, fname);
-		//}
-		//}
+		}
+		}
 		}
 		return 0;
 	}

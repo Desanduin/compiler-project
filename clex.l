@@ -121,15 +121,18 @@ int system_include = 0;
 ">"                     { return tokenset('>'); }
 "^"                     { return tokenset('^'); }
 "?"                     { return tokenset('?'); }
-.			{ lexerr("token not detected");}
+.			{ /*lexerr("token not detected");*/}
 %%
 
+/*
+ * focuses on finding lexical errors. needs to include filename and lineno
+*/
 void lexerr(char *s)
 {
         errors++;
         fprintf(stderr, "%s: lexical error", s);
-        /* to do: add mechanism for reporting file name and line number */
         fprintf(stderr, ", token = \"%s\"\n", yytext);
+	exit(1);
 }
 
 /*
@@ -143,13 +146,12 @@ int yywrap()
 
 void handle_include()
 {
+   yylineno++;
    /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
    if (system_include == 1) {
    	system_include = 0;
-	yylineno = 0;
    } else {
-   user_include++;
-   
+   user_include++; 
    funame = strchr(yytext, '\"')+1;
    funame[strlen(funame)-1] = '\0';
    yylineno = 0;
@@ -166,6 +168,7 @@ int tokenset(int tokenvalue){
 token.category = tokenvalue;
 token.lineno = yylineno;
 token.text = strdup(yytext);
+token.filename = fname;
 return tokenvalue;
 }
 

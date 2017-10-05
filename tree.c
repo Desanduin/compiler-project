@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include "tree.h"
 
+
+// makeTreeNode modified from Dr J's provided alctree
 tree *makeTreeNode(int prodrule, char *kind, int nkids, ...){
 	int i;
 	va_list ap;
@@ -22,15 +24,20 @@ tree *makeTreeNode(int prodrule, char *kind, int nkids, ...){
    	return ptr;
 }
 
-// treeprint provided by Dr. J
+// treeprint provided by Dr. J with some small edits
 int treeprint(struct tree *t, int depth){
-	tree *printTree = t;
 	int i;
-	printf("%*s %s %d\n", depth*2, " ", printTree->kind, printTree->nkids);
-	for(i=0; i < printTree->nkids; i++){
-		if (printTree->kids[i] != NULL){
-		treeprint(printTree->kids[i], depth+1);
+	if (new_file == 1){
+		//printf("Filename: %s\n", t->leaf.filename);
+		new_file--;
+	}
+	if (new_file == 0){
+	printf("%*s %s %d\n", depth*2, " ", t->kind, t->nkids);
+	for(i=0; i < t->nkids; i++){
+		if (t->kids[i] != NULL){
+		treeprint(t->kids[i], depth+1);
 		}
+	}
 	}
 }
 

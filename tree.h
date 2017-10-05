@@ -12,6 +12,7 @@ typedef struct tree {
 	struct token *leaf;
 }tree;
 int depth;
+int new_file;
 extern tree *savedTree;
 tree *makeTreeNode(int prodrule, char *kind, int nkids, ...);  
 int treeprint(struct tree *t, int depth);

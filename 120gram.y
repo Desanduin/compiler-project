@@ -248,7 +248,15 @@ static void yyerror(char *s);
 
 %start translation_unit
 
+
+
 %%
+
+/*
+ * makeTreeNode placements helpfully provided by the script gramtree.m
+ * gramtree.m was provided by a student in CS445, with a link in Dr. J's
+ * lecture notes, at the start of Lecture 23
+*/
 
 /*----------------------------------------------------------------------
  * Context-dependent identifiers.
@@ -324,12 +332,18 @@ boolean_literal:
    | FALSE           { $$ = makeTreeNode(def_boolean_literal, "boolean_literal:", 1, NULL); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Translation unit.
+ *----------------------------------------------------------------------*/
+   
 translation_unit:
      declaration_seq_opt           { $$ = makeTreeNode(def_translation_unit, "translation_unit:", 1, $1); savedTree = $$;}
    ;
 
-
+/*----------------------------------------------------------------------
+ * Expressions.
+ *----------------------------------------------------------------------*/
+   
 primary_expression:
      literal           { $$ = makeTreeNode(def_primary_expression, "primary_expression:", 1, $1); }
    | THIS           { $$ = makeTreeNode(def_primary_expression, "primary_expression:", 1, NULL); }
@@ -577,7 +591,10 @@ expression:
    | expression ',' assignment_expression           { $$ = makeTreeNode(def_expression, "expression:", 3, $1, NULL, $3); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Statements.
+ *----------------------------------------------------------------------*/
+   
 constant_expression:
      conditional_expression           { $$ = makeTreeNode(def_constant_expression, "constant_expression:", 1, $1); }
    ;
@@ -655,7 +672,10 @@ declaration_statement:
      block_declaration           { $$ = makeTreeNode(def_declaration_statement, "declaration_statement:", 1, $1); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Declarations.
+ *----------------------------------------------------------------------*/
+   
 declaration_seq:
      declaration           { $$ = makeTreeNode(def_declaration_seq, "declaration_seq:", 1, $1); }
    | declaration_seq declaration           { $$ = makeTreeNode(def_declaration_seq, "declaration_seq:", 2, $1, $2); }
@@ -858,7 +878,10 @@ linkage_specification:
    | EXTERN string_literal declaration           { $$ = makeTreeNode(def_linkage_specification, "linkage_specification:", 3, NULL, $2, $3); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Declarators.
+ *----------------------------------------------------------------------*/
+   
 init_declarator_list:
      init_declarator           { $$ = makeTreeNode(def_init_declarator_list, "init_declarator_list:", 1, $1); }
    | init_declarator_list ',' init_declarator           { $$ = makeTreeNode(def_init_declarator_list, "init_declarator_list:", 3, $1, NULL, $3); }
@@ -1002,6 +1025,10 @@ initializer_list:
    ;
 
 
+/*----------------------------------------------------------------------
+ * Classes.
+ *----------------------------------------------------------------------*/
+   
 class_specifier:
      class_head '{' member_specification_opt '}'           { $$ = makeTreeNode(def_class_specifier, "class_specifier:", 4, $1, NULL, $3, NULL); }
    ;
@@ -1064,6 +1091,10 @@ constant_initializer:
    ;
 
 
+/*----------------------------------------------------------------------
+ * Derived classes.
+ *----------------------------------------------------------------------*/
+   
 base_clause:
      ':' base_specifier_list           { $$ = makeTreeNode(def_base_clause, "base_clause:", 2, NULL, $2); }
    ;
@@ -1097,7 +1128,10 @@ access_specifier:
    | PUBLIC           { $$ = makeTreeNode(def_access_specifier, "access_specifier:", 1, NULL); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Special member functions.
+ *----------------------------------------------------------------------*/
+   
 conversion_function_id:
      OPERATOR conversion_type_id           { $$ = makeTreeNode(def_conversion_function_id, "conversion_function_id:", 2, NULL, $2); }
    ;
@@ -1137,7 +1171,10 @@ mem_initializer_id:
    | identifier           { $$ = makeTreeNode(def_mem_initializer_id, "mem_initializer_id:", 1, $1); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Overloading.
+ *----------------------------------------------------------------------*/
+   
 operator_function_id:
      OPERATOR operator           { $$ = makeTreeNode(def_operator_function_id, "operator_function_id:", 2, NULL, $2); }
    ;
@@ -1188,7 +1225,10 @@ operator:
    | '[' ']'           { $$ = makeTreeNode(def_operator, "operator:", 2, NULL, NULL); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Templates.
+ *----------------------------------------------------------------------*/
+   
 template_declaration:
      EXPORT_opt TEMPLATE '<' template_parameter_list '>' declaration           { $$ = makeTreeNode(def_template_declaration, "template_declaration:", 6, $1, NULL, NULL, $4, NULL, $6); }
    ;
@@ -1244,6 +1284,10 @@ explicit_specialization:
    ;
 
 
+/*----------------------------------------------------------------------
+ * Exception handling.
+ *----------------------------------------------------------------------*/
+   
 try_block:
      TRY compound_statement handler_seq           { $$ = makeTreeNode(def_try_block, "try_block:", 3, NULL, $2, $3); }
    ;
@@ -1287,7 +1331,10 @@ type_id_list:
    | type_id_list ',' type_id           { $$ = makeTreeNode(def_type_id_list, "type_id_list:", 3, $1, NULL, $3); }
    ;
 
-
+/*----------------------------------------------------------------------
+ * Epsilon (optional) definitions.
+ *----------------------------------------------------------------------*/
+   
 declaration_seq_opt:
      /* epsilon */          { $$ = NULL; }
    | declaration_seq           { $$ = makeTreeNode(def_declaration_seq_opt, "declaration_seq_opt:", 1, $1); }
@@ -1439,8 +1486,12 @@ type_id_list_opt:
 
 %%
 
+/* 
+ * standard yyerror to find syntax errors
+ * need to add filename and lineno functionality
+*/
 static void yyerror(char *s)
 {
-	fprintf(stderr, "syntax error: %s\n", s);
+	fprintf(stderr, "syntax error on line , file , string: %s\n", s);
 	exit(2);
 }
