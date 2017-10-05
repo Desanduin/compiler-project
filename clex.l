@@ -17,11 +17,10 @@ COMMENT  \/\*(\*(\/)|[^*])*\*\/|\/\/.*
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "ytab.h"
 #include "structset.h"
-
-void lexerr(char *s);
+#include "120gram.h"
 void handle_include();
+void lexerr(char *s);
 int tokenset(int token);
 
 /* #define DEBUG */
@@ -44,7 +43,7 @@ int system_include = 0;
 "else"                  { return tokenset(ELSE); }
 "float"                 { return tokenset(FLOAT); }
 "for"                   { return tokenset(FOR); }
-"goto"                  { return tokenset(GOTO); }
+"goto"                  { lexerr("feature not supported in 120++"); }
 "if"                    { return tokenset(IF); }
 "int"                   { return tokenset(INT); }
 "long"                  { return tokenset(LONG); }
@@ -62,17 +61,10 @@ int system_include = 0;
 
 {L}({L}|{D})*           { return tokenset(IDENTIFIER); }
 
-0[xX]{H}+{IS}?          { lexerr("Hex not supported\n"); }
+0[xX]{H}+{IS}?          { lexerr("Hex not supported"); }
 
-0{O}+{IS}?              { lexerr("Octal not supported\n"); }
+0{O}+{IS}?              { lexerr("Octal not supported"); }
 
-{D}+{IS}?               { return tokenset(ICON); }
-
-'(\\.|[^\\'])+'         { return tokenset(CCON); }
-
-{D}+{E}{FS}?            { return tokenset(FCON); }
-{D}*"."{D}+({E})?{FS}?  { return tokenset(FCON); }
-{D}+"."{D}*({E})?{FS}?  { return tokenset(FCON); }
 
 {LIT}                   { return tokenset(STRING); }
 
@@ -87,47 +79,49 @@ int system_include = 0;
 "#include <ctime>"	{ system_include = 1; handle_include();}
 "#include <cmath>"	{ system_include = 1; handle_include();}
 
-">>="                   { return tokenset(SRASN); }
-"<<="                   { return tokenset(SLASN); }
-"+="                    { return tokenset(PLASN); }
-"-="                    { return tokenset(MIASN); }
-"*="                    { return tokenset(MUASN); }
-"/="                    { return tokenset(DIASN); }
-"%="                   { return tokenset(MOASN); }
-"|="                    { return tokenset(ORASN); }
-">>"                    { return tokenset(SHR); }
-"<<"                    { return tokenset(SHL); }
-"++"                    { return tokenset(INCOP); }
-"--"                    { return tokenset(DECOP); }
-"->"                    { return tokenset(FOLLOW); }
-"&&"                    { return tokenset(AND); }
-"||"                    { return tokenset(OR); }
-"<="                    { return tokenset(LE); }
-">="                    { return tokenset(GE); }
+">>="                   { return tokenset(SREQ); }
+"<<="                   { return tokenset(SLEQ); }
+"+="                    { return tokenset(ADDEQ); }
+"-="                    { return tokenset(SUBEQ); }
+"*="                    { return tokenset(MULEQ); }
+"/="                    { return tokenset(DIVEQ); }
+"%="                   { return tokenset(MODEQ); }
+"|="                    { return tokenset(OREQ); }
+">>"                    { return tokenset(SR); }
+"<<"                    { return tokenset(SL); }
+"++"                    { return tokenset(PLUSPLUS); }
+"--"                    { return tokenset(MINUSMINUS); }
+"->"                    { return tokenset(ARROW); }
+"&&"                    { return tokenset(ANDAND); }
+"||"                    { return tokenset(OROR); }
+"<="                    { return tokenset(LTEQ); }
+">="                    { return tokenset(GTEQ); }
 "=="                    { return tokenset(EQ); }
-"!="                    { return tokenset(NE); }
-";"                     { return tokenset(SM); }
-"{"                     { return tokenset(LC); }
-"}"                     { return tokenset(RC); }
-","                     { return tokenset(CM); }
-":"                     { return tokenset(COLON); }
-"="                     { return tokenset(ASN); }
-"("                     { return tokenset(LP); }
-")"                     { return tokenset(RP); }
-"["                     { return tokenset(LB); }
-"]"                     { return tokenset(RB); }
-"."                     { return tokenset(DOT); }
-"!"                     { return tokenset(BANG); }
-"~"                     { return tokenset(NOT); }
-"-"                     { return tokenset(MINUS); }
-"+"                     { return tokenset(PLUS); }
-"*"                     { return tokenset(MUL); }
-"/"                     { return tokenset(DIV); }
-"%"                     { return tokenset(MOD); }
-"<"                     { return tokenset(LT); }
-">"                     { return tokenset(GT); }
-"^"                     { return tokenset(ER); }
-"?"                     { return tokenset(QUEST); }
+"!="                    { return tokenset(NOTEQ); }
+"::"			{ return tokenset(COLONCOLON);}
+";"                     { return tokenset(';'); }
+"{"                     { return tokenset('{'); }
+"}"                     { return tokenset('}'); }
+","                     { return tokenset(','); }
+":"                     { return tokenset(':'); }
+"="                     { return tokenset('='); }
+"("                     { return tokenset('('); }
+")"                     { return tokenset(')'); }
+"["                     { return tokenset('['); }
+"]"                     { return tokenset(']'); }
+"."                     { return tokenset('.'); }
+"!"                     { return tokenset('!'); }
+"~"                     { return tokenset('~'); }
+"-"                     { return tokenset('-'); }
+"+"                     { return tokenset('+'); }
+"*"                     { return tokenset('*'); }
+"/"                     { return tokenset('/'); }
+"%"                     { return tokenset('%'); }
+"<"                     { return tokenset('<'); }
+">"                     { return tokenset('>'); }
+"^"                     { return tokenset('^'); }
+"?"                     { return tokenset('?'); }
+.			{ lexerr("token not detected");}
 %%
 
 void lexerr(char *s)
@@ -151,18 +145,16 @@ void handle_include()
 {
    /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
    if (system_include == 1) {
-	printf("%s\n", strdup(yytext));
    	system_include = 0;
 	yylineno = 0;
    } else {
-   //saved_yyin = yyin;
    user_include++;
+   
    funame = strchr(yytext, '\"')+1;
    funame[strlen(funame)-1] = '\0';
-   //yyin = fopen(fname,"r");
    yylineno = 0;
    if (yyin == NULL) {
-     lexerr("cannot open include file");
+     printf("cannot open include file\n");
      exit(1);
    }
    }

@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 3 "<stdout>"
 
 #define  YY_INT_ALIGNED short int
 
@@ -671,7 +671,7 @@ int tokenset(int token);
 /* #define DEBUG */
 int errors;
 int system_include = 0;
-#line 675 "lex.yy.c"
+#line 675 "<stdout>"
 
 #define INITIAL 0
 
@@ -892,7 +892,7 @@ YY_DECL
 #line 32 "clex.l"
 
 
-#line 896 "lex.yy.c"
+#line 896 "<stdout>"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1282,114 +1282,114 @@ YY_RULE_SETUP
 case 66:
 YY_RULE_SETUP
 #line 110 "clex.l"
-{ return tokenset(LC); }
+{ return tokenset('{'); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
 #line 111 "clex.l"
-{ return tokenset(RC); }
+{ return tokenset('}'); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
 #line 112 "clex.l"
-{ return tokenset(CM); }
+{ return tokenset(','); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
 #line 113 "clex.l"
-{ return tokenset(COLON); }
+{ return tokenset(':'); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
 #line 114 "clex.l"
-{ return tokenset(ASN); }
+{ return tokenset('='); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
 #line 115 "clex.l"
-{ return tokenset(LP); }
+{ return tokenset('('); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
 #line 116 "clex.l"
-{ return tokenset(RP); }
+{ return tokenset(')'); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
 #line 117 "clex.l"
-{ return tokenset(LB); }
+{ return tokenset('['); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
 #line 118 "clex.l"
-{ return tokenset(RB); }
+{ return tokenset(']'); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
 #line 119 "clex.l"
-{ return tokenset(DOT); }
+{ return tokenset('.'); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
 #line 120 "clex.l"
-{ return tokenset(BANG); }
+{ return tokenset('!'); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
 #line 121 "clex.l"
-{ return tokenset(NOT); }
+{ return tokenset('~'); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
 #line 122 "clex.l"
-{ return tokenset(MINUS); }
+{ return tokenset('-'); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
 #line 123 "clex.l"
-{ return tokenset(PLUS); }
+{ return tokenset('+'); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
 #line 124 "clex.l"
-{ return tokenset(MUL); }
+{ return tokenset('*'); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
 #line 125 "clex.l"
-{ return tokenset(DIV); }
+{ return tokenset('/'); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
 #line 126 "clex.l"
-{ return tokenset(MOD); }
+{ return tokenset('%'); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
 #line 127 "clex.l"
-{ return tokenset(LT); }
+{ return tokenset('<'); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
 #line 128 "clex.l"
-{ return tokenset(GT); }
+{ return tokenset('>'); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
 #line 129 "clex.l"
-{ return tokenset(ER); }
+{ return tokenset('^'); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
 #line 130 "clex.l"
-{ return tokenset(QUEST); }
+{ return tokenset('?'); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
 #line 131 "clex.l"
 ECHO;
 	YY_BREAK
-#line 1393 "lex.yy.c"
+#line 1393 "<stdout>"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
