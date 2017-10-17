@@ -7,22 +7,28 @@ all: 120++
 .c.o:
 	$(CC) -c $<
 
-120++: 120gram.o 120lex.o main.o tree.o
-	cc -o 120++ 120gram.o 120lex.o main.o tree.o
+120++: lex.yy.o main.o tree.o symt.o semantic.o 120gram.tab.o
+	cc -o 120++  lex.yy.o main.o tree.o symt.o semantic.o 120gram.tab.o
 
-120gram.c 120gram.h: 120gram.y
-	$(YACC) -dt --verbose 120gram.y
-	mv -f y.tab.c 120gram.c
-	mv -f y.tab.h 120gram.h
+120gram.tab.c: 120gram.y
+	bison -dtv 120gram.y
 
-120lex.c: clex.l
-	$(LEX) -t clex.l >120lex.c
+lex.yy.c: clex.l 120gram.tab.c
+	$(LEX)  clex.l
 
 120lex.o: 120gram.h
 
+120gram.tab.o: 120gram.tab.c
+	$(CC) -c -g 120gram.tab.c
+
 tree.o: tree.h
+
+symt.o: symt.h
+
+semantic.o: semantic.h
 
 clean:
 	rm -f 120++ *.o
-	rm -f 120lex.c 120gram.c 120gram.h
+	rm -f lex.yy.c 120gram.tab.c
+	rm -f 120gram.output
 

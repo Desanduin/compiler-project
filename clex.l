@@ -5,6 +5,9 @@ D        [0-9]
 L        [a-zA-Z_]
 H        [a-fA-F0-9]
 E        [Ee][+-]?{D}+
+fracconst 	([0-9]*\.[0-9]+)|([0-9]+\.)
+exppart		[eE][-+]?[0-9]+
+floatsuffix	[fFlL]
 FS       (f|F|l|L)
 IS       (u|U|l|L)
 W        [ \t\f]*
@@ -17,12 +20,13 @@ COMMENT  \/\*(\*(\/)|[^*])*\*\/|\/\/.*
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "structset.h"
+#include "globals.h"
+#include "tree.h"
 #include "120gram.h"
 void handle_include();
 void lexerr(char *s);
 int tokenset(int token);
-
+extern YYSTYPE yylval;
 /* #define DEBUG */
 int errors;
 int system_include = 0;
@@ -58,6 +62,7 @@ int system_include = 0;
 "unsigned"              { return tokenset(UNSIGNED); }
 "void"                  { return tokenset(VOID); }
 "while"                 { return tokenset(WHILE); }
+"std"			{ return tokenset(NAMESPACE_NAME); }
 
 {L}({L}|{D})*           { return tokenset(IDENTIFIER); }
 
@@ -67,6 +72,12 @@ int system_include = 0;
 
 
 {LIT}                   { return tokenset(STRING); }
+
+{O}|{D}			{ return tokenset(INTEGER); }
+
+
+{fracconst}{exppart}?{floatsuffix}?	{ return tokenset(FLOATING); }
+[0-9]+{exppart}{floatsuffix}?		{ return tokenset(FLOATING); }
 
 {COMMENT}		{ }
 
@@ -121,7 +132,8 @@ int system_include = 0;
 ">"                     { return tokenset('>'); }
 "^"                     { return tokenset('^'); }
 "?"                     { return tokenset('?'); }
-.			{ /*lexerr("token not detected");*/}
+"using namespace std;"	{ }
+.			{ lexerr("token not detected");}
 %%
 
 /*
@@ -131,7 +143,7 @@ void lexerr(char *s)
 {
         errors++;
         fprintf(stderr, "%s: lexical error", s);
-        fprintf(stderr, ", token = \"%s\"\n", yytext);
+        fprintf(stderr, " line number = %d, filename = , token = \"%s\"\n", yylineno , yytext);
 	exit(1);
 }
 
@@ -161,14 +173,16 @@ void handle_include()
    }
    }
 }
-
 // actually creates our token with the tokenvalue as input
 // note that .filename and .ival/.sval are not set here
 int tokenset(int tokenvalue){
-token.category = tokenvalue;
-token.lineno = yylineno;
-token.text = strdup(yytext);
-token.filename = fname;
+token lextoken = malloc(sizeof(struct token));
+lextoken->category = tokenvalue;
+lextoken->lineno = yylineno;
+lextoken->text = strdup(yytext);
+lextoken->filename = fname;
+yylval.treenode = makeTreeNode(tokenvalue, yytext, 0);
+yylval.treenode->leaf = lextoken;
 return tokenvalue;
 }
 
