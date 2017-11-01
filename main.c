@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+/*
+ * HW3 - Gavin Quinn CS 445
+ *
+*/
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 
 #include "globals.h"
 #include "tree.h"
@@ -12,8 +19,13 @@ extern char *yytext;
 extern int yylex();
 extern int yyparse();
 int read(FILE *, int, char *);
+<<<<<<< HEAD
 extern struct tree *savedTree;
 extern struct hashtable *symboltable; 
+=======
+tree *savedTree = NULL;
+hashtable_t *gtable;
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 /*
  * exit status: 
  * 		(0) successful, no errors
@@ -22,11 +34,23 @@ extern struct hashtable *symboltable;
  * 		(3) "feature not supported" error, NYI
 */
 
+<<<<<<< HEAD
 
 int main(int argc, char *argv[]) {
 	depth = 0;
 	numErrors = 0;
 	savedTree = NULL;
+=======
+/*
+ * TODO:
+ * 	- correctly print filenames/line numbers for all errors and standard output
+ * 	- review grammar, add error locations
+ * 	- integrate prodrule instead of stabbing in a string
+*/
+
+int main(int argc, char *argv[]) {
+	depth = 0;
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 	if (argc == 0) {
 		printf("Please provide an input file");
 		return 0;
@@ -47,12 +71,15 @@ int main(int argc, char *argv[]) {
 		}
 		}
 	}
+<<<<<<< HEAD
 	
         if (numErrors > 0){
  	printf("Number of Errors: %d\n", numErrors);
  	exit(3);
  	}
 
+=======
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 	free(fname);
 	return 0;
 }
@@ -63,6 +90,7 @@ int read(FILE *temp, int arg, char *frname) {
         	printf("Can't open %s\n", frname);
         	return 1;
 	}
+<<<<<<< HEAD
 	if (yyparse() == 0){
 		if(debug == 1) printf("DEBUG: Entering ht_create from read\n");
 		if(debug == 1) printf("DEBUG: Exiting into read from ht_create\n");
@@ -70,6 +98,15 @@ int read(FILE *temp, int arg, char *frname) {
 		if(debug == 1) printf("DEBUG: Entering semanticAnalysis from read\n");
 		symboltable = ht_create(numnodes*1.5);
 		semanticAnalysis(savedTree);
+=======
+	//token.filename = strdup(frname);
+	if (yyparse() == 0){
+		if(debug == 1) printf("DEBUG: Entering ht_create from read\n");
+		gtable = ht_create(numnodes*1.5);
+		if(debug == 1) printf("DEBUG: Exiting into read from ht_create\n");
+		if(debug == 1) printf("DEBUG: Entering semanticAnalysis from read\n");
+		semanticAnalysis(savedTree, gtable);
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 	// else something catastrophic happened. should never reach here, lexical errors
 	// and syntax errors should exit within yyparse
 	} else {
@@ -78,6 +115,9 @@ int read(FILE *temp, int arg, char *frname) {
 	}
 	yylineno = 1;
 	fclose(yyin);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 }
 

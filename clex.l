@@ -2,7 +2,11 @@
 slightly adjusted to fit course requirements */
 O        [0-7]
 D        [0-9]
+<<<<<<< HEAD
 L        [a-zA-Z]
+=======
+L        [a-zA-Z_]
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 H        [a-fA-F0-9]
 E        [Ee][+-]?{D}+
 fracconst 	([0-9]*\.[0-9]+)|([0-9]+\.)
@@ -22,6 +26,7 @@ COMMENT  \/\*(\*(\/)|[^*])*\*\/|\/\/.*
 #include <ctype.h>
 #include "globals.h"
 #include "tree.h"
+<<<<<<< HEAD
 #include "120gram.tab.h"
 void handle_include();
 void lexerr(char *);
@@ -38,6 +43,22 @@ struct token *nodetoken;
 
 \n                      { lineno++;}
 [\t\f\v\r ]+                { }
+=======
+#include "120gram.h"
+void handle_include();
+void lexerr(char *s);
+int tokenset(int token);
+extern YYSTYPE yylval;
+/* #define DEBUG */
+int errors;
+int system_include = 0;
+%}
+
+%%
+
+\n                      { yylineno++; }
+[ \t\f]+                { }
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 "break"                 { return tokenset(BREAK); }
 "case"                  { return tokenset(CASE); }
 "char"                  { return tokenset(CHAR); }
@@ -109,6 +130,7 @@ struct token *nodetoken;
 "||"                    { return tokenset(OROR); }
 "<="                    { return tokenset(LTEQ); }
 ">="                    { return tokenset(GTEQ); }
+<<<<<<< HEAD
 "=="                    { return tokenset(EQEQ); }
 "!="                    { return tokenset(NOTEQ); }
 "::"			{ return tokenset(COLONCOLON);}
@@ -137,6 +159,33 @@ struct token *nodetoken;
 ">"                     { return tokenset(GT); }	
 "^"                     { return tokenset(KARAT); }	
 "?"                     { return tokenset(QUEST); }
+=======
+"=="                    { return tokenset(EQ); }
+"!="                    { return tokenset(NOTEQ); }
+"::"			{ return tokenset(COLONCOLON);}
+";"                     { return tokenset(';'); }
+"{"                     { return tokenset('{'); }
+"}"                     { return tokenset('}'); }
+","                     { return tokenset(','); }
+":"                     { return tokenset(':'); }
+"="                     { return tokenset('='); }
+"("                     { return tokenset('('); }
+")"                     { return tokenset(')'); }
+"["                     { return tokenset('['); }
+"]"                     { return tokenset(']'); }
+"."                     { return tokenset('.'); }
+"!"                     { return tokenset('!'); }
+"~"                     { return tokenset('~'); }
+"-"                     { return tokenset('-'); }
+"+"                     { return tokenset('+'); }
+"*"                     { return tokenset('*'); }
+"/"                     { return tokenset('/'); }
+"%"                     { return tokenset('%'); }
+"<"                     { return tokenset('<'); }
+">"                     { return tokenset('>'); }
+"^"                     { return tokenset('^'); }
+"?"                     { return tokenset('?'); }
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 "using namespace std;"	{ }
 .			{ lexerr("token not detected");}
 %%
@@ -163,7 +212,11 @@ int yywrap()
 
 void handle_include()
 {
+<<<<<<< HEAD
    //yylineno++;
+=======
+   yylineno++;
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
    /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
    if (system_include == 1) {
    	system_include = 0;
@@ -181,6 +234,7 @@ void handle_include()
 // actually creates our token with the tokenvalue as input
 // note that .filename and .ival/.sval are not set here
 int tokenset(int tokenvalue){
+<<<<<<< HEAD
         struct token * lextoken = (struct token *)malloc(sizeof(struct token));
 	lextoken->category = tokenvalue;
         lextoken->lineno = lineno;
@@ -192,3 +246,15 @@ int tokenset(int tokenvalue){
 }
 
 
+=======
+token lextoken = malloc(sizeof(struct token));
+lextoken->category = tokenvalue;
+lextoken->lineno = yylineno;
+lextoken->text = strdup(yytext);
+lextoken->filename = fname;
+yylval.treenode = makeTreeNode(tokenvalue, yytext, 0);
+yylval.treenode->leaf = lextoken;
+return tokenvalue;
+}
+
+>>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
