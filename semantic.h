@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #ifndef SEMANTIC_H_
 #define SEMANTIC_H
 #include "tree.h"
@@ -15,10 +14,3 @@ void expression(struct tree *);
 void assignment_expression(struct tree *);
 void check_ht_get(struct tree *);
 #endif
-=======
-/*#include "tree.h"
-#include "symt.h"
-
-void semanticAnlysis (tree *, hashtable_t);
-*/
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56

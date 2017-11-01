@@ -3,10 +3,7 @@
 #include <stdarg.h>
 #include "tree.h"
 #include "globals.h"
-<<<<<<< HEAD
 
-=======
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 #define getName(var) #var
 
 /*
@@ -16,24 +13,15 @@
  * a new fucntion that takes prodrule and finds the right grammar rule
  *
 */
-<<<<<<< HEAD
 struct tree * makeTreeNode(int prodrule, char *kind, int nkids, ...){
 	numnodes++;
 	int i;
 	va_list ap;
 	struct tree * ptr = malloc(sizeof(struct tree) + (nkids-1)*sizeof(struct tree *) + sizeof(struct token));
-=======
-tree makeTreeNode(int prodrule, char *kind, int nkids, ...){
-	numnodes++;
-	int i;
-	va_list ap;
-	tree ptr = malloc(sizeof(struct tree) + (nkids-1)*sizeof(struct tree*));
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 	if (ptr == NULL){
 		fprintf(stderr, "tree ran out of memory\n");
 		exit(1);
 	}
-<<<<<<< HEAD
 	initializePTR(ptr);
 	ptr->prodrule = prodrule;
 	ptr->kind = kind;
@@ -70,29 +58,12 @@ void initializePTR(struct tree *init){
 	for (i = 0; i < 9; i++){
 		init->kids[i] = NULL;
 	}
-=======
-	ptr->prodrule = prodrule;
-	ptr->kind = kind;
-	ptr->nkids = nkids;
-	if (nkids > 0) {
-	va_start(ap, nkids);
-   	for(i=0; i < nkids; i++){
-      		ptr->kids[i] = va_arg(ap, tree *);
-	}
-   	va_end(ap);
-	}
-   	return ptr;
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 }
 
 // treeprint provided by Dr. J with some small edits
 int treeprint(struct tree *t, int depth){
 	int i;
 	if (t->leaf != NULL){
-<<<<<<< HEAD
-=======
-	printf("%s\n", t->leaf->text);
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 	}
 	if (new_file == 1){
 		//printf("Filename: %s\n", t->leaf.filename);
@@ -102,10 +73,6 @@ int treeprint(struct tree *t, int depth){
 	printf("%*s %s %d\n", depth*2, " ", t->kind, t->nkids);
 	for(i=0; i < t->nkids; i++){
 		if (t->kids[i] != NULL){
-<<<<<<< HEAD
-=======
-		printf("prodrule value: %d\n", t->prodrule);
->>>>>>> 01a1ed476c1c35d8cd4fd7dd0786a4263eb4ab56
 		treeprint(t->kids[i], depth+1);
 		}
 	}
