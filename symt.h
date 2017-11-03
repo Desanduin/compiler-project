@@ -11,6 +11,7 @@ struct entry {
 struct hashtable {
 	char *scope;
 	int size;
+	//struct hashtable *ltable[15];
 	struct entry **table;
 };
 

@@ -1256,127 +1256,127 @@ type_id_list:
  *----------------------------------------------------------------------*/
    
 declaration_seq_opt:
-     /* epsilon */          { $$ = makeTreeNode(551, "declaration_seq_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(DECLARATION_SEQ_OPT, "declaration_seq_opt1", 0); }
    | declaration_seq           { $$ = $1; }
    ;
 
 
 nested_name_specifier_opt:
-     /* epsilon */          { $$ = makeTreeNode(552, "nested_name_specifier_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(NESTED_NAME_SPECIFIER_OPT, "nested_name_specifier_opt1", 0); }
    | nested_name_specifier           { $$ = $1; }
    ;
 
 
 expression_list_opt:
-     /* epsilon */          { $$ = makeTreeNode(553, "expression_list_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(EXPRESSION_LIST_OPT, "expression_list_opt1", 0); }
    | expression_list           { $$ = $1; }
    ;
 
 
 COLONCOLON_opt:
-     /* epsilon */          { $$ = makeTreeNode(554, "COLONCOLON_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(COLONCOLON_OPT, "COLONCOLON_opt1", 0); }
    | COLONCOLON           { $$ = leaf($1, COLONCOLON);}
    ;
 
 
 new_placement_opt:
-     /* epsilon */          { $$ = makeTreeNode(555, "new_placement_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(NEW_PLACEMENT_OPT, "new_placement_opt1", 0); }
    | new_placement           { $$ = $1; }
    ;
 
 
 new_initializer_opt:
-     /* epsilon */          { $$ = makeTreeNode(556, "new_initializer_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(NEW_INITIALIZER_OPT, "new_initializer_opt1", 0); }
    | new_initializer           { $$ = $1; }
    ;
 
 
 new_declarator_opt:
-     /* epsilon */          { $$ = makeTreeNode(557, "new_declarator_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(NEW_DECLARATOR_OPT, "new_declarator_opt1", 0); }
    | new_declarator           { $$ = $1; }
    ;
 
 
 expression_opt:
-     /* epsilon */          { $$ = makeTreeNode(558, "expression_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(EXPRESSION_OPT, "expression_opt1", 0); }
    | expression           { $$ = $1; }
    ;
 
 
 statement_seq_opt:
-     /* epsilon */          { $$ = makeTreeNode(559, "statement_seq_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(STATEMENT_SEQ_OPT, "statement_seq_opt1", 0); }
    | statement_seq           { $$ = $1; }
    ;
 
 
 condition_opt:
-     /* epsilon */          { $$ = makeTreeNode(560, "condition_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(CONDITION_OPT, "condition_opt1", 0); }
    | condition           { $$ = $1; }
    ;
 
 
 enumerator_list_opt:
-     /* epsilon */          { $$ = makeTreeNode(561, "enumerator_list_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(ENUMERATOR_LIST_OPT, "enumerator_list_opt1", 0); }
    | enumerator_list           { $$ = $1; }
    ;
 
 
 initializer_opt:
-     /* epsilon */          { $$ = makeTreeNode(562, "initializer_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(INITIALIZER_OPT, "initializer_opt1", 0); }
    | initializer           { $$ = $1; }
    ;
 
 
 constant_expression_opt:
-     /* epsilon */          { $$ = makeTreeNode(563, "constant_expression_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(CONSTANT_EXPRESSION_OPT, "constant_expression_opt1", 0); }
    | constant_expression           { $$ = $1; }
    ;
 
 
 abstract_declarator_opt:
-     /* epsilon */          { $$ = makeTreeNode(564, "abstract_declarator_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(ABSTRACT_DECLARATOR_OPT, "abstract_declarator_opt1", 0); }
    | abstract_declarator           { $$ = $1; }
    ;
 
 
 type_specifier_seq_opt:
-     /* epsilon */          { $$ = makeTreeNode(565, "type_specifier_seq_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(TYPE_SPECIFIER_SEQ_OPT, "type_specifier_seq_opt1", 0); }
    | type_specifier_seq           { $$ = $1; }
    ;
 
 
 direct_abstract_declarator_opt:
-     /* epsilon */          { $$ = makeTreeNode(566, "direct_abstract_declarator_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(DIRECT_ABSTRACT_DECLARATOR_OPT, "direct_abstract_declarator_opt1", 0); }
    | direct_abstract_declarator           { $$ = $1; }
    ;
 
 
 ctor_initializer_opt:
-     /* epsilon */          { $$ = makeTreeNode(567, "ctor_initializer_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(CTOR_INITIALIZER_OPT, "ctor_initializer_opt1", 0); }
    | ctor_initializer           { $$ = $1; }
    ;
 
 
 COMMA_opt:
-     /* epsilon */          { $$ = makeTreeNode(568, "COMMA_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(COMMA_OPT, "COMMA_opt1", 0); }
    | COMMA           { $$ = leaf($1, COMMA); }
    ;
 
 
 member_specification_opt:
-     /* epsilon */          { $$ = makeTreeNode(569, "member_specification_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(MEMBER_SPECIFICATION_OPT, "member_specification_opt1", 0); }
    | member_specification           { $$ = $1;}
    ;
 
 
 SEMICOLON_opt:
-     /* epsilon */          { $$ = makeTreeNode(570, "SEMICOLON_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(SEMICOLON_OPT, "SEMICOLON_opt1", 0); }
    | SEMIC           { $$ = leaf($1, SEMIC); }
    ;
 
 
 conversion_declarator_opt:
-     /* epsilon */          { $$ = makeTreeNode(571, "conversion_declarator_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(CONVERSION_DECLARATOR_OPT, "conversion_declarator_opt1", 0); }
    | conversion_declarator           { $$ = $1; }
    ;
 
@@ -1384,19 +1384,19 @@ conversion_declarator_opt:
 
 
 handler_seq_opt:
-     /* epsilon */          { $$ = makeTreeNode(572, "handler_seq_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(HANDLER_SEQ_OPT, "handler_seq_opt1", 0); }
    | handler_seq           { $$ = $1; }
    ;
 
 
 assignment_expression_opt:
-     /* epsilon */          { $$ = makeTreeNode(573, "assignment_expression_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(ASSIGNMENT_EXPRESSION_OPT, "assignment_expression_opt1", 0); }
    | assignment_expression           { $$ = $1; }
    ;
 
 
 type_id_list_opt:
-     /* epsilon */          { $$ = makeTreeNode(574, "type_id_list_opt1", 0); }
+     /* epsilon */          { $$ = makeTreeNode(TYPE_ID_LIST_OPT, "type_id_list_opt1", 0); }
    | type_id_list           { $$ = $1; }
    ;
 

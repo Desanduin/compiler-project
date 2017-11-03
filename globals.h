@@ -28,4 +28,5 @@ int numErrors;
 int user_include;
 bool debug;
 int lineno;
+int analysisPass;
 #endif

@@ -37,7 +37,7 @@ struct hashtable *ht_create(int size) {
 
 /* hash a key value for a particular table */
 static int ht_hash(struct hashtable *hashtable, char *key){
-	unsigned long int hashval;
+	unsigned long int hashval = 0;
 	unsigned int i = 0;
 	while (hashval < ULONG_MAX && i < strlen(key)) {
 		hashval = hashval << 8;
@@ -71,12 +71,12 @@ static struct entry *ht_newpair(char *key, char *scope, int data_type){
 /* inserts a key and values into a hash table */
 void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) {
 	int bin = 0;
-	if(debug == 1) printf("DEBUG: Entering ht_hash from ht_set\n");
-	bin = ht_hash(hashtable, key);
 	struct entry *next = NULL;
-	if(debug == 1) printf("DEBUG: Exiting ht_hash into ht_set\n");
-	next = hashtable->table[bin];
 	struct entry *last = NULL;
+	if(debug == 2) printf("DEBUG: Entering ht_hash from ht_set\n");
+	bin = ht_hash(hashtable, key);
+	if(debug == 2) printf("DEBUG: Exiting ht_hash into ht_set\n");
+	next = hashtable->table[bin];
 	while (next != NULL && next->key != NULL && strcmp(key, next->key) > 0) {
 		last = next;
 		next = next->next;
@@ -88,13 +88,13 @@ void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) 
  	*
 	*/
 	if (next != NULL && next->key != NULL && strcmp(key, next->key) == 0){
-		printf("ERROR: Symbol '%s' is already defined at line .\n", key);
+		printf("ERROR: Symbol '%s' is already defined - ht_set\n", key);
 	/* yay we couldn't find the key, make one! */ 
 	} else {
-		if(debug == 1) printf("DEBUG: Entering ht_newpair from ht_set\n");
+		if(debug == 2) printf("DEBUG: Entering ht_newpair from ht_set\n");
 		struct entry *newpair = NULL;
 		newpair = ht_newpair(key, scope, data_type);
-		if(debug == 1) printf("DEBUG: Exiting ht_newpair into ht_set\n");
+		if(debug == 2) printf("DEBUG: Exiting ht_newpair into ht_set\n");
 		if (next == hashtable->table[bin]) {
 			newpair->next = next;
 			hashtable->table[bin] = newpair;
@@ -105,7 +105,7 @@ void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) 
 			last->next = newpair;
 		}
 	}
-	if (debug == 1) printf("DEBUG: Leaving ht_set\n");
+	if (debug == 2) printf("DEBUG: Leaving ht_set\n");
 }	
 
 
@@ -113,13 +113,12 @@ void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) 
 char *ht_get(struct hashtable *hashtable, char *key){
 	int bin = 0;
 	struct entry * pair;
-	if (debug == 1) printf("DEBUG: Entering ht_hash from ht_get\n");
+	if (debug == 2) printf("DEBUG: Entering ht_hash from ht_get\n");
 	bin = ht_hash(hashtable, key);
 	pair = hashtable->table[bin];
 	while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
 		pair = pair->next;
 	}
-
 	if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
 		return NULL;
 	} else {

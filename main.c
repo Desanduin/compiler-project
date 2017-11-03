@@ -13,7 +13,7 @@ extern int yylex();
 extern int yyparse();
 int read(FILE *, int, char *);
 extern struct tree *savedTree;
-extern struct hashtable *symboltable; 
+extern struct hashtable *gtable; 
 /*
  * exit status: 
  * 		(0) successful, no errors
@@ -26,6 +26,7 @@ extern struct hashtable *symboltable;
 int main(int argc, char *argv[]) {
 	depth = 0;
 	numErrors = 0;
+	analysisPass = 0;
 	savedTree = NULL;
 	if (argc == 0) {
 		printf("Please provide an input file");
@@ -64,11 +65,7 @@ int read(FILE *temp, int arg, char *frname) {
         	return 1;
 	}
 	if (yyparse() == 0){
-		if(debug == 1) printf("DEBUG: Entering ht_create from read\n");
-		if(debug == 1) printf("DEBUG: Exiting into read from ht_create\n");
-		//treeprint(savedTree, depth);
-		if(debug == 1) printf("DEBUG: Entering semanticAnalysis from read\n");
-		symboltable = ht_create(numnodes*1.5);
+		gtable = ht_create(numnodes*1.5);
 		semanticAnalysis(savedTree);
 	// else something catastrophic happened. should never reach here, lexical errors
 	// and syntax errors should exit within yyparse
