@@ -12,6 +12,18 @@ void parameter_declaration(struct tree *);
 void function_definition(struct tree *);
 void expression(struct tree *);
 void assignment_expression(struct tree *);
+void logical_or_expression(struct tree *);
+void logical_and_expression(struct tree *);
+void inclusive_or_expression(struct tree *);
+void and_expression(struct tree *);
+void equality_expression(struct tree *);
+void relational_expression(struct tree *);
+void shift_expression(struct tree *);
+void additive_expression(struct tree *);
+void multiplicative_expression(struct tree *);
+void pm_expression(struct tree *);
 void postfix_expression(struct tree *);
 void check_ht_get(struct tree *);
+void check_type(struct tree *);
+void get_type(struct tree *);
 #endif

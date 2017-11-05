@@ -63,7 +63,8 @@ static struct entry *ht_newpair(char *key, char *scope, int data_type){
 		printf("hey4\n");
 		return NULL;
 	}*/
-	memcpy(newpair->scope, scope, data_type);
+	memcpy(newpair->scope, scope, sizeof(scope));
+	newpair->data_type = data_type;
 	newpair->next = NULL;
 	return newpair;
 }
@@ -124,4 +125,20 @@ char *ht_get(struct hashtable *hashtable, char *key){
 	} else {
 		return pair->scope;
 	}
+}
+
+int ht_get_type(struct hashtable *hashtable, char *key){
+        int bin = 0;
+        struct entry * pair;
+        if (debug == 2) printf("DEBUG: Entering ht_hash from ht_get\n");
+        bin = ht_hash(hashtable, key);
+        pair = hashtable->table[bin];
+        while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+                pair = pair->next;
+        }
+        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+		return 20;
+        } else {
+                return pair->data_type;
+        }
 }	
