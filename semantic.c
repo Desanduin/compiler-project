@@ -7,7 +7,7 @@
 #include "gram_rules.h"
 #include <stdlib.h>
 #include <string.h>
-struct hashtable *gtable;
+//struct hashtable *gtable;
 struct hashtable *currtable;
 char *currscope;
 int currtype;
@@ -32,9 +32,11 @@ struct tree * semanticAnalysis (struct tree *t){
 		return NULL;
 	} else if (t->nkids > 0) {
 		if (debug == 1) printf("SEMANTICANALYSIS\n");
-		printf("%d\n", t->prodrule);
+		if (debug == 1) printf("%d\n", t->prodrule);
 		if (t->prodrule == SIMPLE_DECLARATION){
 			simple_declaration(t);
+		} else if (t->prodrule == SELECTION_STATEMENT){
+			selection_statement(t);
 		} else if (t->prodrule == FUNCTION_DEFINITION){
 			function_definition(t);
 		} else if (t->prodrule == EXPRESSION_STATEMENT){
@@ -72,7 +74,20 @@ void init_declarator(struct tree *t){
 	if (t->nkids == 0){
 		check_ht_get(t);	
 	} else if (t->nkids > 0){
+		declarator(t);
+	}
+}
+
+void declarator(struct tree *t){
+	if (debug == 1) printf("\t\tDECLARATOR\n");
+	if (t->prodrule == DIRECT_DECLARATOR){
 		direct_declarator(t);
+	} else {
+		if (currtype != 4){
+			//fprintf(stderr, "ERROR: Only pointer to char currently supported. Current type %s on line %d\n", typechar(t), t->leaf->lineno);
+		} else {
+			//direct_declarator(t->kids[1]);
+		}
 	}
 }
 
@@ -80,8 +95,7 @@ void direct_declarator(struct tree *t){
 	if (debug == 1) printf("\t\tDIRECT_DECLARATOR\n");
 	if (t->kids[0]->nkids == 0){
 		check_ht_get(t->kids[0]);
-	} 
-	if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
+	} else if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
 			parameter_declaration_list(t->kids[2]);
 		}
 }
@@ -121,6 +135,26 @@ void function_definition (struct tree *t){
 		}
 }
 
+void selection_statement(struct tree *t){
+	if (debug == 1) printf("\tSELECTION_STATEMENT\n");
+	if (t->kids[0]->leaf->category == SWITCH){
+		condition(t->kids[2]);
+		semanticAnalysis(t->kids[4]);
+	} else if (t->kind == "selection_statement2"){
+		condition(t->kids[2]);
+		semanticAnalysis(t->kids[4]);
+		semanticAnalysis(t->kids[6]);	
+	} else {
+		condition(t->kids[2]);
+		semanticAnalysis(t->kids[4]);
+	}
+}
+
+void condition(struct tree *t){
+	if (debug == 1) printf("\t\tCONDITION\n");
+	expression(t);	
+}
+
 /* note that we skip past expression_opt, since it only has one prod rule
  * expression_statement->expression_opt->expression */
 void expression (struct tree *t){
@@ -133,9 +167,25 @@ void expression (struct tree *t){
 	}
 }
 
+void expression_list_opt(struct tree *t){
+	if (debug == 1) printf("EXPRESSION_LIST_OPT\n");
+	if (t->prodrule == EXPRESSION_LIST_OPT){
+	} else {
+		expression(t);
+	}
+}	
+
 void assignment_expression(struct tree *t){
 	if (debug == 1) printf("\t\tASSIGNMENT_EXPRESSION\n");
 	if (t->prodrule == ASSIGNMENT_EXPRESSION){
+		/*lnode = traverse(t->kids[0]);
+		get_type(lnode);
+		rnode = traverse(t->kids[2]);
+                get_type(rnode);
+                if (lnode->type != rnode->type){
+                        printf("ERROR: Attempting to equate two symbols together of differing types: lsymbol - %s, rsymbol - %s on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+                        numErrors++;
+                }*/
 		assignment_expression(t->kids[2]);
 		logical_or_expression(t->kids[0]);
 	} else {
@@ -196,6 +246,14 @@ void equality_expression (struct tree *t){
 void relational_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\tRELATIONAL_EXPRESSION\n");
 	if (t->prodrule == RELATIONAL_EXPRESSION){
+		lnode = traverse(t->kids[0]);
+		rnode = traverse(t->kids[2]);
+		get_type(lnode);
+		get_type(rnode);
+		if (lnode->type != rnode->type){
+			fprintf(stderr, "ERROR: Attempting to compare two symbols together of differing types: lsymbol - %s, rsymbol - %s, on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+			numErrors++;
+		}
 		relational_expression(t->kids[0]);
 		shift_expression(t->kids[2]);
 	} else {
@@ -206,6 +264,14 @@ void relational_expression (struct tree *t){
 void shift_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\t\tSHIFT_EXPRESSION\n");
 	if (t->prodrule == SHIFT_EXPRESSION){
+		/*lnode = traverse(t->kids[0]);
+		rnode = traverse(t->kids[2]);
+		get_type(lnode);
+		get_type(rnode);
+		if (lnode->type != rnode->type){
+			printf("ERROR: Attempting to compare two symbols together of differing types: lsymbol - %s, rsymbol - %s, on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+			numErrors++;
+		}*/
 		shift_expression(t->kids[0]);
 		additive_expression(t->kids[2]);
 	} else {
@@ -221,7 +287,7 @@ void additive_expression (struct tree *t){
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
 		if (lnode->type != rnode->type){
-			printf("ERROR: Attempting to add or subtract two symbols together of differing types: lsymbol - %s, rsymbol - %s on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+			fprintf(stderr, "ERROR: Attempting to add or subtract two symbols together of differing types: lsymbol - %s, rsymbol - %s on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
 			numErrors++;
 		}
 		additive_expression(t->kids[0]);
@@ -234,63 +300,87 @@ void additive_expression (struct tree *t){
 void multiplicative_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\t\t\t\tMULTIPLICATIVE_EXPRESSION\n");
 	if (t->prodrule == MULTIPLICATIVE_EXPRESSION){
-		printf("%d\n", t->kids[0]->type);
 		get_type(t->kids[0]->kids[0]);
 		get_type(t->kids[2]->kids[0]);
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
 		if (lnode->type != rnode->type){
-			printf("ERROR: Attempting to multiply, divide, or mod two symbols of differing types: lsymbol - %s, rsymbol - %s on lineno %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+			fprintf(stderr, "ERROR: Attempting to multiply, divide, or mod two symbols of differing types: lsymbol - %s, rsymbol - %s on lineno %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
 			numErrors++;
 		}
 		multiplicative_expression(t->kids[0]);
-		pm_expression(t->kids[2]);
+		postfix_expression(t->kids[2]);
 	} else {
-		pm_expression(t);
+		cast_expression(t);
 	}
 }
-
-void pm_expression(struct tree *t){
-	check_type(t->kids[0]);
+//skipped pm_expression - multiplicative_exp -> pm_exp -> unary_exp
+void cast_expression(struct tree *t){
+	if (debug == 1) printf("\t\t\t\t\t\t\t\tCAST_EXPRESSION\n");
+	if (t->prodrule == CAST_EXPRESSION){
+		postfix_expression(t->kids[0]);
+	}	
 }
 
 void postfix_expression (struct tree *t){
-	if (t->kids[2]->leaf->category == LPAREN){
-		check_ht_get(t->kids[0]);
+	if (debug == 1) printf("\t\t\t\t\t\t\t\tPOSTFIX_EXPRESSION\n");
+	if (t->prodrule == POSTFIX_EXPRESSION){
+		check_all_tables(t->kids[0]);
+		postfix_expression(t->kids[0]);
+		expression_list_opt(t->kids[2]);
+	} else {
 	}
-		check_ht_get(t->kids[0]);
 }
 
 void check_ht_get(struct tree *t){
 	if (ht_get(currtable, t->leaf->text) != NULL){
 			if (strcmp(currscope, ht_get(currtable, t->leaf->text)) == 0){
-			printf("ERROR: Symbol %s is already defined on line %d\n", t->leaf->text, t->leaf->lineno);
+			fprintf(stderr, "ERROR: Symbol %s is already defined on line %d\n", t->leaf->text, t->leaf->lineno);
         		numErrors++;
 		}
 	} else {
         	t->type = currtype;
-		if(t->type == 1){
-        		printf("ERROR: Symbol %s is being defined as void on line %d\n", t->leaf->text, t->leaf->lineno);
-   			numErrors++;
-		} else {
+		//if(t->type == 1){
+        		//fprintf(stderr, "ERROR: Symbol %s is being defined as void on line %d\n", t->leaf->text, t->leaf->lineno);
+   			//numErrors++;
+		//} else {
 			if (debug == 1) printf("---------\nPUTTING NEW SYMBOL INTO A TABLE\n---------\n");
         		if (debug==1) printf("Current symbol %s\n", t->leaf->text);
 			if(debug == 1) printf("Current scope %s\n", currscope);
         		if (debug == 1)printf("Current type %d\n", t->type);
 			ht_set(currtable, t->leaf->text, currscope, t->type);
-		}	
+		//}	
 	}
 }
 
-void check_type(struct tree *t){
-
+void check_all_tables(struct tree *t){
+	int i;
+	struct hashtable *savedTable;
+	savedTable = gtable;
+	if (ht_get(savedTable, t->leaf->text) != NULL){
+		if (debug == 1) printf("Found scope for a function call\n");
+	} else {
+		for (i = 0; i < 16; i++){
+		if (ht_get(savedTable->ltable[i], t->leaf->text) != NULL){
+			if (debug == 1) printf("Found scope for a function call\n");
+		}
+		}
+	}		
 }
 
 void get_type(struct tree *t){
 	if (ht_get_type(currtable, t->leaf->text) == 20){
-		printf("ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+		fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
 		numErrors++;
 	} else {
 		t->type = ht_get_type(currtable, t->leaf->text);
 	}
+}
+
+struct tree *traverse(struct tree *t){
+	int i;
+	while (t->prodrule != IDENTIFIER){
+		t = t->kids[0];
+	}
+	return t;
 }

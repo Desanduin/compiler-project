@@ -22,8 +22,10 @@ COMMENT  \/\*(\*(\/)|[^*])*\*\/|\/\/.*
 #include <ctype.h>
 #include "globals.h"
 #include "tree.h"
+#include "symt.h"
 #include "120gram.tab.h"
 void handle_include();
+void namespace_include();
 void lexerr(char *);
 int tokenset(int );
 struct token * tokenizer(int, int, char *, char*);
@@ -31,6 +33,7 @@ struct token * tokenizer(int, int, char *, char*);
 /* #define DEBUG */
 int errors;
 int system_include = 0;
+int using_namespace = 0;
 int lineno = 0;
 struct token *nodetoken;
 %}
@@ -86,11 +89,11 @@ struct token *nodetoken;
 "#include"[ ]*\"[^\\"]+\"  { handle_include();}
 
 "#include <iostream>"   { system_include = 1; handle_include();}
-"#include <fstream>"	{ system_include = 1; handle_include();}
-"#include <string>"	{ system_include = 1; handle_include();}
-"#include <cstdlib>"	{ system_include = 1; handle_include();}
-"#include <ctime>"	{ system_include = 1; handle_include();}
-"#include <cmath>"	{ system_include = 1; handle_include();}
+"#include <fstream>"	{ system_include = 2; handle_include();}
+"#include <string>"	{ system_include = 3; handle_include();}
+"#include <cstdlib>"	{ system_include = 4; handle_include();}
+"#include <ctime>"	{ system_include = 5; handle_include();}
+"#include <cmath>"	{ system_include = 6; handle_include();}
 
 ">>="                   { return tokenset(SREQ); }
 "<<="                   { return tokenset(SLEQ); }
@@ -137,7 +140,7 @@ struct token *nodetoken;
 ">"                     { return tokenset(GT); }	
 "^"                     { return tokenset(KARAT); }	
 "?"                     { return tokenset(QUEST); }
-"using namespace std;"	{ }
+"using namespace std;"	{ using_namespace = 1; }
 .			{ lexerr("token not detected");}
 %%
 
@@ -160,12 +163,31 @@ int yywrap()
    return 1;
 }
 
+void namespace_include(){
+	if (system_include == 0){
+		fprintf(stderr, "Lexical error: [using namespace std;] used without or before system includes\n");
+		exit(1);
+	} else {
+		switch (system_include){
+			case 1:
+				ht_set(gtable, "cout", "global", 1);
+				ht_set(gtable, "cin", "global", 1);
+				ht_set(gtable, "endl", "global", 1);
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			default:
+			break;
+		}
+	}
+}
 
 void handle_include()
 {
-   //yylineno++;
    /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
-   if (system_include == 1) {
+if (system_include != 0) {
    	system_include = 0;
    } else {
    user_include++; 

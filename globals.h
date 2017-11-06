@@ -1,6 +1,7 @@
 #ifndef STRUCTSET_H_
 #define STRUCTSET_H_
 #include <stdio.h>
+#include "symt.h"
 // Only works in C99, bool doesn't work otherwise
 #include <stdbool.h>
 // token and tokenl struct yanked from Dr. J's notes
@@ -28,5 +29,6 @@ int numErrors;
 int user_include;
 bool debug;
 int lineno;
+struct hashtable *gtable;
 int analysisPass;
 #endif

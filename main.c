@@ -13,7 +13,6 @@ extern int yylex();
 extern int yyparse();
 int read(FILE *, int, char *);
 extern struct tree *savedTree;
-extern struct hashtable *gtable; 
 /*
  * exit status: 
  * 		(0) successful, no errors
@@ -68,7 +67,7 @@ int read(FILE *temp, int arg, char *frname) {
 		gtable = ht_create(numnodes*1.5);
 		semanticAnalysis(savedTree);
 		if (ht_get(gtable, "main") == NULL){
-			printf("ERROR: main is not defined.\n");
+			fprintf(stderr, "ERROR: main is not defined.\n");
 			numErrors++;
 		}
 	// else something catastrophic happened. should never reach here, lexical errors
