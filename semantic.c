@@ -27,6 +27,7 @@ struct tree * semanticAnalysis (struct tree *t){
 		currscope = "global";
 		temp++;
 	}
+	gtable->ltable[numtable] = currtable;
 	if (!t){
 		printf("Warning: Tree is null\n");
 		return NULL;
@@ -42,6 +43,7 @@ struct tree * semanticAnalysis (struct tree *t){
 		} else if (t->prodrule == EXPRESSION_STATEMENT){
 			expression(t);
 		}
+		numtable++;
 		for (j=0; j < t->nkids; j++){
 			semanticAnalysis(t->kids[j]);
 		}
@@ -128,7 +130,6 @@ void function_definition (struct tree *t){
 		currscope = t->kids[1]->kids[0]->leaf->text;
 		gtable->ltable[numtable] = ht_create(numnodes*1.5);
 		currtable = gtable->ltable[numtable];
-		numtable++;
 		assigntype(t->kids[0]);
 		currtype = t->kids[0]->type;
 		direct_declarator(t->kids[1]);
@@ -355,18 +356,16 @@ void check_ht_get(struct tree *t){
 
 void check_all_tables(struct tree *t){
 	int i;
-	struct hashtable *savedTable;
-	savedTable = gtable;
-	if (ht_get(savedTable, t->leaf->text) != NULL){
-		if (debug == 1) printf("Found scope for a function call\n");
-	} else {
-		for (i = 0; i < 16; i++){
-		if (ht_get(savedTable->ltable[i], t->leaf->text) != NULL){
-			if (debug == 1) printf("Found scope for a function call\n");
+	int flag = 0;
+	for (i = 0; i < 16; i++){
+		if ((ht_get(gtable, t->leaf->text) == NULL) && (ht_get(gtable->ltable[i], t->leaf->text) == NULL)){
+		flag++;
 		}
-		}
+	}
+	if (flag == 16){
+		fprintf(stderr, "ERROR: Undefined function being called. Function name - %s | lineno - %d\n", t->leaf->text, t->leaf->lineno);		
+		}	
 	}		
-}
 
 void get_type(struct tree *t){
 	if (ht_get_type(currtable, t->leaf->text) == 20){
