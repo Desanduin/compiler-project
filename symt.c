@@ -15,7 +15,7 @@
  *
 */
 struct hashtable *ht_create(int size) {
- 	struct hashtable *hashtable = NULL;
+	struct hashtable *hashtable = NULL;
 	int i;
 	if (size < 1) {
 		return NULL;

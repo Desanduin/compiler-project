@@ -42,6 +42,8 @@ struct tree * semanticAnalysis (struct tree *t){
 			function_definition(t);
 		} else if (t->prodrule == EXPRESSION_STATEMENT){
 			expression(t);
+		} else if (t->prodrule == CLASS_SPECIFIER){
+			class_specifier(t);
 		}
 		numtable++;
 		for (j=0; j < t->nkids; j++){
@@ -49,6 +51,12 @@ struct tree * semanticAnalysis (struct tree *t){
 		}
 	}
 }
+
+/* -----------------------------
+ * ----------DECLARATIONS-------
+ * -----------------------------
+*/
+
 void simple_declaration (struct tree *t){
 	if (debug == 1) printf("\tSIMPLE_DECLARATION\n");
 	if (t->kids[0]->nkids == 0) {
@@ -59,6 +67,20 @@ void simple_declaration (struct tree *t){
 		init_declarator_list(t->kids[1]);
 	}		
 }
+
+void decl_specifier_seq (struct tree *t){
+	if (t->prodrule == DECL_SPECIFIER_SEQ){
+		decl_specifier_seq(t->kids[0]);
+		check_ht_get(t->kids[1]);
+	} else {
+		check_ht_get(t->kids[0]);
+	}
+}
+
+/* -----------------------------
+ * ----------DECLARATORS--------
+ * -----------------------------
+*/
 
 void init_declarator_list(struct tree *t){
 	if (debug == 1) printf("\t\tINIT_DECLARATOR_LIST\n");
@@ -98,8 +120,8 @@ void direct_declarator(struct tree *t){
 	if (t->kids[0]->nkids == 0){
 		check_ht_get(t->kids[0]);
 	} else if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
-			parameter_declaration_list(t->kids[2]);
-		}
+		parameter_declaration_list(t->kids[2]);
+}
 }
 
 void parameter_declaration_list(struct tree *t){
@@ -116,6 +138,7 @@ void parameter_declaration_list(struct tree *t){
 void parameter_declaration(struct tree *t){
 	if (debug == 1) printf("\t\t\t\tPARAMETER_DECLARATION\n");
 	if (t->nkids == 0 && t->prodrule != ABSTRACT_DECLARATOR_OPT){
+
 		check_ht_get(t); 
 	}else if (t->nkids > 0){
 		direct_declarator(t);
@@ -136,6 +159,11 @@ void function_definition (struct tree *t){
 		}
 }
 
+/* -----------------------------
+ * ----------STATEMENTS---------
+ * -----------------------------
+*/
+
 void selection_statement(struct tree *t){
 	if (debug == 1) printf("\tSELECTION_STATEMENT\n");
 	if (t->kids[0]->leaf->category == SWITCH){
@@ -155,6 +183,11 @@ void condition(struct tree *t){
 	if (debug == 1) printf("\t\tCONDITION\n");
 	expression(t);	
 }
+
+/* -----------------------------
+ * ----------EXPRESSIONS--------
+ * -----------------------------
+*/  
 
 /* note that we skip past expression_opt, since it only has one prod rule
  * expression_statement->expression_opt->expression */
@@ -333,6 +366,46 @@ void postfix_expression (struct tree *t){
 	}
 }
 
+/* -----------------------------
+ * ----------CLASSES------------
+ * -----------------------------
+*/
+
+void class_specifier (struct tree *t){
+	class_head(t->kids[0]);
+	member_specification_opt(t->kids[2]);
+}
+
+void class_head (struct tree *t){
+	check_ht_get(t->kids[1]);
+}
+
+void member_specification_opt (struct tree *t){
+	if (t->prodrule == MEMBER_SPECIFICATION){
+		member_specification(t);
+	} else {
+	}
+}
+
+void member_specification (struct tree *t){
+	if (t->kind == "member_specification1"){
+		member_declaration(t->kids[0]);
+		member_specification_opt(t->kids[1]);
+	} else {
+		//access_specifier(t->kids[0]);
+		member_specification_opt(t->kids[2]);
+	}	
+}
+
+void member_declaration(struct tree *t){
+
+}
+
+/* -----------------------------
+ * ----TYPE-CHECK-FUNCTIONS-----
+ * -----------------------------
+*/
+
 void check_ht_get(struct tree *t){
 	if (ht_get(currtable, t->leaf->text) != NULL){
 			if (strcmp(currscope, ht_get(currtable, t->leaf->text)) == 0){
@@ -354,15 +427,16 @@ void check_ht_get(struct tree *t){
 	}
 }
 
+
 void check_all_tables(struct tree *t){
 	int i;
 	int flag = 0;
-	for (i = 0; i < 16; i++){
+	for (i = 0; i < 15; i++){
 		if ((ht_get(gtable, t->leaf->text) == NULL) && (ht_get(gtable->ltable[i], t->leaf->text) == NULL)){
 		flag++;
 		}
 	}
-	if (flag == 16){
+	if (flag == 15){
 		fprintf(stderr, "ERROR: Undefined function being called. Function name - %s | lineno - %d\n", t->leaf->text, t->leaf->lineno);		
 		}	
 	}		

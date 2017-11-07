@@ -4,6 +4,7 @@
 #include "symt.h"
 struct tree * semanticAnalysis (struct tree *);
 void simple_declaration(struct tree *);
+void decl_specifier_seq(struct tree *);
 void init_declarator_list(struct tree*);
 void init_declarator(struct tree *);
 void declarator(struct tree *);
@@ -27,6 +28,11 @@ void additive_expression(struct tree *);
 void multiplicative_expression(struct tree *);
 void cast_expression(struct tree *);
 void postfix_expression(struct tree *);
+void class_specifier(struct tree *);
+void class_head(struct tree *);
+void member_specification_opt(struct tree *);
+void member_specification(struct tree *);
+void member_declaration(struct tree *);
 void check_ht_get(struct tree *);
 void check_all_tables(struct tree *);
 void get_type(struct tree *);

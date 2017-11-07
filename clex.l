@@ -32,8 +32,13 @@ struct token * tokenizer(int, int, char *, char*);
 // extern YYSTYPE yylval;
 /* #define DEBUG */
 int errors;
-int system_include = 0;
-int using_namespace = 0;
+int using_namespace;
+int iostream;
+int fstream;
+int string;
+int cstdlib;
+int ctime;
+int cmath;
 int lineno = 0;
 struct token *nodetoken;
 %}
@@ -67,6 +72,9 @@ struct token *nodetoken;
 "unsigned"              { return tokenset(UNSIGNED); }
 "void"                  { return tokenset(VOID); }
 "while"                 { return tokenset(WHILE); }
+"class"			{ return tokenset(CLASS); }
+"private"		{ return tokenset(PRIVATE); }
+"public"		{ return tokenset(PUBLIC); }
 "std"			{ return tokenset(NAMESPACE_NAME); }
 
 {L}({L}|{D})*           { return tokenset(IDENTIFIER); }
@@ -88,12 +96,12 @@ struct token *nodetoken;
 
 "#include"[ ]*\"[^\\"]+\"  { handle_include();}
 
-"#include <iostream>"   { system_include = 1; handle_include();}
-"#include <fstream>"	{ system_include = 2; handle_include();}
-"#include <string>"	{ system_include = 3; handle_include();}
-"#include <cstdlib>"	{ system_include = 4; handle_include();}
-"#include <ctime>"	{ system_include = 5; handle_include();}
-"#include <cmath>"	{ system_include = 6; handle_include();}
+"#include <iostream>"   { iostream = 1;}
+"#include <fstream>"	{ fstream = 1;}
+"#include <string>"	{ string = 1;}
+"#include <cstdlib>"	{ cstdlib = 1;}
+"#include <ctime>"	{ ctime = 1;}
+"#include <cmath>"	{ cmath = 1;}
 
 ">>="                   { return tokenset(SREQ); }
 "<<="                   { return tokenset(SLEQ); }
@@ -140,7 +148,7 @@ struct token *nodetoken;
 ">"                     { return tokenset(GT); }	
 "^"                     { return tokenset(KARAT); }	
 "?"                     { return tokenset(QUEST); }
-"using namespace std;"	{ using_namespace = 1; }
+"using namespace std;"	{ using_namespace = 1; namespace_include();}
 .			{ lexerr("token not detected");}
 %%
 
@@ -164,32 +172,16 @@ int yywrap()
 }
 
 void namespace_include(){
-	if (system_include == 0){
-		fprintf(stderr, "Lexical error: [using namespace std;] used without or before system includes\n");
-		exit(1);
-	} else {
-		switch (system_include){
-			case 1:
-				ht_set(gtable, "cout", "global", 1);
-				ht_set(gtable, "cin", "global", 1);
-				ht_set(gtable, "endl", "global", 1);
-				break;
-			case 2:
-				break;
-			case 3:
-				break;
-			default:
-			break;
-		}
+	if (iostream) {
+		ht_set(gtable, "cout", "global", 1);
+		ht_set(gtable, "cin", "global", 1);
+		ht_set(gtable, "endl", "global", 1);
 	}
 }
 
 void handle_include()
 {
    /* added additional lines to catch system_includes. At this time only catches and ignores. no notification */
-if (system_include != 0) {
-   	system_include = 0;
-   } else {
    user_include++; 
    funame = strchr(yytext, '\"')+1;
    funame[strlen(funame)-1] = '\0';
@@ -199,7 +191,7 @@ if (system_include != 0) {
      exit(1);
    }
    }
-}
+
 // actually creates our token with the tokenvalue as input
 // note that .filename and .ival/.sval are not set here
 int tokenset(int tokenvalue){

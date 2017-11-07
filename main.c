@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 		user_include = 0;
 		new_file = 0;
 		/* set to true for detailed output */
-		debug = true;
+		debug = false;
 		while (--argc+user_include > 0) {
 		if (user_include >= 1) {
 		new_file = 1;
@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
 		}
 		}
 	}
-	
         if (numErrors > 0){
  	printf("Number of Errors: %d\n", numErrors);
  	exit(3);
@@ -63,8 +62,8 @@ int read(FILE *temp, int arg, char *frname) {
         	printf("Can't open %s\n", frname);
         	return 1;
 	}
+	gtable = ht_create(sizeof(struct hashtable));
 	if (yyparse() == 0){
-		gtable = ht_create(numnodes*1.5);
 		semanticAnalysis(savedTree);
 		if (ht_get(gtable, "main") == NULL){
 			fprintf(stderr, "ERROR: main is not defined.\n");
@@ -77,7 +76,7 @@ int read(FILE *temp, int arg, char *frname) {
 		exit(1);
 	}
 	yylineno = 1;
-	fclose(yyin);
+	//fclose(yyin);
 	return 0;
 }
 
