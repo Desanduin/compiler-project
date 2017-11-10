@@ -285,7 +285,7 @@ void relational_expression (struct tree *t){
 		get_type(lnode);
 		get_type(rnode);
 		if (lnode->type != rnode->type){
-			fprintf(stderr, "ERROR: Attempting to compare two symbols together of differing types: lsymbol - %s, rsymbol - %s, on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+			fprintf(stderr, "ERROR: Attempting to compare two symbols together of differing types. lsymbol type - %s | text - %s | lineno %d, rsymbol type - %s | text - %s | lineno %d\n", typechar(lnode), lnode->leaf->text, lnode->leaf->lineno, typechar(rnode), rnode->leaf->text, rnode->leaf->lineno);
 			numErrors++;
 		}
 		relational_expression(t->kids[0]);
@@ -321,7 +321,7 @@ void additive_expression (struct tree *t){
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
 		if (lnode->type != rnode->type){
-			fprintf(stderr, "ERROR: Attempting to add or subtract two symbols together of differing types: lsymbol - %s, rsymbol - %s on lineno - %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+                        fprintf(stderr, "ERROR: Attempting to add or subtract two symbols together of differing types. lsymbol type - %s | text - %s | lineno %d, rsymbol type - %s | text - %s | lineno %d\n", typechar(lnode), lnode->leaf->text, lnode->leaf->lineno, typechar(rnode), rnode->leaf->text, rnode->leaf->lineno);
 			numErrors++;
 		}
 		additive_expression(t->kids[0]);
@@ -339,7 +339,8 @@ void multiplicative_expression (struct tree *t){
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
 		if (lnode->type != rnode->type){
-			fprintf(stderr, "ERROR: Attempting to multiply, divide, or mod two symbols of differing types: lsymbol - %s, rsymbol - %s on lineno %d\n", lnode->leaf->text, rnode->leaf->text, lnode->leaf->lineno);
+                        fprintf(stderr, "ERROR: Attempting to multiply, divide, or mod two symbols together of differing types. lsymbol type - %s | text - %s | lineno %d, rsymbol type - %s | text - %s | lineno %d\n", typechar(lnode), lnode->leaf->text, lnode->leaf->lineno, typechar(rnode), rnode->leaf->text, rnode->leaf->lineno);
+
 			numErrors++;
 		}
 		multiplicative_expression(t->kids[0]);
@@ -406,10 +407,11 @@ void member_declaration(struct tree *t){
  * -----------------------------
 */
 
+/* primary function to do simple ht lookups */
 void check_ht_get(struct tree *t){
 	if (ht_get(currtable, t->leaf->text) != NULL){
 			if (strcmp(currscope, ht_get(currtable, t->leaf->text)) == 0){
-			fprintf(stderr, "ERROR: Symbol %s is already defined on line %d\n", t->leaf->text, t->leaf->lineno);
+			fprintf(stderr, "ERROR: Symbol %s is already defined. Duplicate declaration on line %d\n", t->leaf->text, t->leaf->lineno);
         		numErrors++;
 		}
 	} else {
@@ -427,7 +429,7 @@ void check_ht_get(struct tree *t){
 	}
 }
 
-
+/* checks all possible tables (limit 15 functions) for an etnry */
 void check_all_tables(struct tree *t){
 	int i;
 	int flag = 0;
@@ -441,6 +443,7 @@ void check_all_tables(struct tree *t){
 		}	
 	}		
 
+/* returns a ht success/fail based on data_type, rather than scope */
 void get_type(struct tree *t){
 	if (ht_get_type(currtable, t->leaf->text) == 20){
 		fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
@@ -450,6 +453,9 @@ void get_type(struct tree *t){
 	}
 }
 
+/* pushes down the tree to a leaf, should only be used with care, for when you know the 
+ * grammar has a kid[0] leaf you're trying to push down to.
+*/
 struct tree *traverse(struct tree *t){
 	int i;
 	while (t->prodrule != IDENTIFIER){

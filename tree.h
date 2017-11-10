@@ -5,6 +5,7 @@ struct tree {
 	int prodrule;
 	int nkids;
 	char *kind;
+	char *code;
 	int numChildren;
 	int epsilonMatched;
 	int declaredMatched;

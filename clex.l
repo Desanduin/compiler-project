@@ -39,6 +39,7 @@ int string;
 int cstdlib;
 int ctime;
 int cmath;
+int system_function;
 int lineno = 0;
 struct token *nodetoken;
 %}
@@ -172,10 +173,20 @@ int yywrap()
 }
 
 void namespace_include(){
+	if (system_function == 1){
+		fprintf(stderr, "ERROR: Multiple declarations of system includes. Remove duplicates.\n");
+		numErrors++;
+	} else {
 	if (iostream) {
 		ht_set(gtable, "cout", "global", 1);
 		ht_set(gtable, "cin", "global", 1);
 		ht_set(gtable, "endl", "global", 1);
+	}
+	if (string){
+		ht_set(gtable, "string", "global", 1);
+		
+	}
+	system_function = 1;
 	}
 }
 

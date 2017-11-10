@@ -19,6 +19,7 @@ struct hashtable {
 char *ht_get(struct hashtable *, char *);
 int ht_get_type(struct hashtable *, char *);
 void ht_set(struct hashtable *, char *, char *, int);
+int ht_functioN_call(struct hashtable *, char *);
 struct hashtable *ht_create( int);
 
 #endif

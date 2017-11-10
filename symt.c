@@ -141,4 +141,9 @@ int ht_get_type(struct hashtable *hashtable, char *key){
         } else {
                 return pair->data_type;
         }
+}
+
+int ht_function_call(struct hashtable *hasthable, char *key){
+	
+
 }	
