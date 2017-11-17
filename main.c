@@ -1,4 +1,3 @@
-/* HW4 - Gavin Quinn */
 #include "globals.h"
 #include "tree.h"
 #include "semantic.h"
@@ -11,6 +10,7 @@ extern int yylineno;
 extern char *yytext;
 extern int yylex();
 extern int yyparse();
+int flag;
 int read(FILE *, int, char *);
 extern struct tree *savedTree;
 /*
@@ -25,6 +25,7 @@ extern struct tree *savedTree;
 int main(int argc, char *argv[]) {
 	depth = 0;
 	numErrors = 0;
+	flag = 0;
 	analysisPass = 0;
 	savedTree = NULL;
 	if (argc == 0) {
@@ -58,6 +59,7 @@ int main(int argc, char *argv[]) {
 
 /* handles file opening/token scanning/file closing in one handy function. Note that temp isn't actually used */
 int read(FILE *temp, int arg, char *frname) {
+	int i;
 	if ((yyin = fopen(frname, "r")) == NULL) {
         	printf("Can't open %s\n", frname);
         	return 1;
@@ -65,10 +67,16 @@ int read(FILE *temp, int arg, char *frname) {
 	gtable = ht_create(sizeof(struct hashtable));
 	if (yyparse() == 0){
 		semanticAnalysis(savedTree);
-		if (ht_get(gtable, "main") == NULL){
-			fprintf(stderr, "ERROR: main is not defined.\n");
-			numErrors++;
-		}
+        for (i = 0; i < 15; i++){
+                if ((ht_get(gtable, "main") == NULL) && (ht_get(gtable->ltable[i], "main") == NULL)){
+                flag++;
+                }
+        }
+        if (flag == 15){
+                fprintf(stderr, "ERROR: main is not defined\n");
+		numErrors++;
+	}
+
 	// else something catastrophic happened. should never reach here, lexical errors
 	// and syntax errors should exit within yyparse
 	} else {

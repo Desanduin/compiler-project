@@ -48,7 +48,7 @@ static int ht_hash(struct hashtable *hashtable, char *key){
 }
 
 /* creates a new "pair" of values */ 
-static struct entry *ht_newpair(char *key, char *scope, int data_type){
+static struct entry *ht_newpair(char *key, char *scope, int data_type, int func, int func_param){
 	struct entry *newpair;
 	if ((newpair = malloc(sizeof(struct entry))) == NULL) {
 		return NULL;
@@ -65,12 +65,15 @@ static struct entry *ht_newpair(char *key, char *scope, int data_type){
 	}*/
 	memcpy(newpair->scope, scope, sizeof(scope));
 	newpair->data_type = data_type;
+	newpair->func = func;
+	newpair->func_param = func_param;
+	//printf("key: %s, func_param: %d\n", key, func_param);
 	newpair->next = NULL;
 	return newpair;
 }
 
 /* inserts a key and values into a hash table */
-void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) {
+void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type, int func, int func_param) {
 	int bin = 0;
 	struct entry *next = NULL;
 	struct entry *last = NULL;
@@ -94,7 +97,7 @@ void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type) 
 	} else {
 		if(debug == 2) printf("DEBUG: Entering ht_newpair from ht_set\n");
 		struct entry *newpair = NULL;
-		newpair = ht_newpair(key, scope, data_type);
+		newpair = ht_newpair(key, scope, data_type, func, func_param);
 		if(debug == 2) printf("DEBUG: Exiting ht_newpair into ht_set\n");
 		if (next == hashtable->table[bin]) {
 			newpair->next = next;
@@ -136,7 +139,7 @@ int ht_get_type(struct hashtable *hashtable, char *key){
         while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
                 pair = pair->next;
         }
-        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+	if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
 		return 20;
         } else {
                 return pair->data_type;

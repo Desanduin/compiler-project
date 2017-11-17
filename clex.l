@@ -5,6 +5,7 @@ D        [0-9]
 L        [a-zA-Z]
 H        [a-fA-F0-9]
 E        [Ee][+-]?{D}+
+intsuffix	([uU][lL]?)|([lL][uU]?)
 fracconst 	([0-9]*\.[0-9]+)|([0-9]+\.)
 exppart		[eE][-+]?[0-9]+
 floatsuffix	[fFlL]
@@ -78,7 +79,8 @@ struct token *nodetoken;
 "public"		{ return tokenset(PUBLIC); }
 "std"			{ return tokenset(NAMESPACE_NAME); }
 
-{L}({L}|{D})*           { return tokenset(IDENTIFIER); }
+
+[a-zA-Z_][a-zA-Z_0-9]*          { return tokenset(IDENTIFIER); }
 
 0[xX]{H}+{IS}?          { lexerr("Hex not supported"); }
 
@@ -87,8 +89,10 @@ struct token *nodetoken;
 
 {LIT}                   { return tokenset(STRING); }
 
-{O}|{D}			{ return tokenset(INTEGER); }
 
+"0"[xX][0-9a-fA-F]+{intsuffix}?		{ return tokenset(INTEGER); }
+"0"[0-7]+{intsuffix}?			{ return tokenset(INTEGER); }
+[0-9]+{intsuffix}?			{ return tokenset(INTEGER); }
 
 {fracconst}{exppart}?{floatsuffix}?	{ return tokenset(FLOATING); }
 [0-9]+{exppart}{floatsuffix}?		{ return tokenset(FLOATING); }
@@ -178,12 +182,12 @@ void namespace_include(){
 		numErrors++;
 	} else {
 	if (iostream) {
-		ht_set(gtable, "cout", "global", 1);
-		ht_set(gtable, "cin", "global", 1);
-		ht_set(gtable, "endl", "global", 1);
+		ht_set(gtable, "cout", "global", 1, 0, 0);
+		ht_set(gtable, "cin", "global", 1, 0, 0);
+		ht_set(gtable, "endl", "global", 1, 0, 0);
 	}
 	if (string){
-		ht_set(gtable, "string", "global", 1);
+		ht_set(gtable, "string", "global", 1, 0, 0);
 		
 	}
 	system_function = 1;

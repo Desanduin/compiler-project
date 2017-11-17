@@ -3,6 +3,8 @@
 #include "tree.h"
 #include "symt.h"
 struct tree * semanticAnalysis (struct tree *);
+struct tree * symt_populate(struct tree *);
+struct tree * type_check(struct tree *);
 void simple_declaration(struct tree *);
 void decl_specifier_seq(struct tree *);
 void init_declarator_list(struct tree*);

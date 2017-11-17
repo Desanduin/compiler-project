@@ -17,39 +17,92 @@ int currorder;
 int currmember;
 int numtable = 0;
 int temp = 0;
+int type;
+int func;
+int func_param;
+int func_global;
 struct tree *lnode;
 struct tree *rnode;
-extern struct tree *savedTree;
+struct tree *nnode;
 struct tree * semanticAnalysis (struct tree *t){
-	int i, j, key;
-	if (temp == 0){
-		currtable = gtable;
-		currscope = "global";
-		temp++;
+	func = 0;
+	func_param = 0;
+	currtable = gtable;
+	currscope = "global";
+	if (symt_populate(t)){
+		if (debug == 1) printf("Symbol table population pass successful. Starting type checking\n");
+		if (/*type_check(t)*/ temp == 200){
+			if (debug == 1) printf("Type checking successful. Leaving semanticAnalysis.\n");
+		} else {
+			if (debug == 1) printf("DEBUG: Type checking was not successful.\n");
+		} 
+	} else {
+		if (debug == 1) printf("DEBUG: Symbol table population was not successful.\n");
 	}
+}
+struct tree * symt_populate (struct tree *t){
+	int i, j, key;
+	func_param = 0;
+	func_global = 0;
 	gtable->ltable[numtable] = currtable;
 	if (!t){
 		printf("Warning: Tree is null\n");
 		return NULL;
 	} else if (t->nkids > 0) {
+		switch (t->prodrule){
 		if (debug == 1) printf("SEMANTICANALYSIS\n");
 		if (debug == 1) printf("%d\n", t->prodrule);
-		if (t->prodrule == SIMPLE_DECLARATION){
-			simple_declaration(t);
-		} else if (t->prodrule == SELECTION_STATEMENT){
-			selection_statement(t);
-		} else if (t->prodrule == FUNCTION_DEFINITION){
-			function_definition(t);
-		} else if (t->prodrule == EXPRESSION_STATEMENT){
-			expression(t);
-		} else if (t->prodrule == CLASS_SPECIFIER){
-			class_specifier(t);
-		}
+			case SIMPLE_DECLARATION:
+				simple_declaration(t);
+				break;
+			case SELECTION_STATEMENT:
+				selection_statement(t);
+				break;
+			case FUNCTION_DEFINITION:
+				function_definition(t);
+				break;
+			case EXPRESSION_STATEMENT:
+				expression(t);
+				break;
+			case CLASS_SPECIFIER:
+				class_specifier(t);
+				break;
+			default: 
+				break;
+		}		
 		numtable++;
 		for (j=0; j < t->nkids; j++){
-			semanticAnalysis(t->kids[j]);
+			symt_populate(t->kids[j]);
 		}
 	}
+	temp = 200;
+}
+struct tree * type_check (struct tree *t){
+        int i, j, key;
+	/* bottom up traversal */
+	for (j = 0; j < t->nkids; j++){
+		type_check(t->kids[j]);
+	}
+        gtable->ltable[numtable] = currtable;
+        if (!t){
+                printf("Warning: Tree is null\n");
+                return NULL;
+        } else if (t->nkids > 0) {
+                if (debug == 1) printf("SEMANTICANALYSIS\n");
+                if (debug == 1) printf("%d\n", t->prodrule);
+                if (t->prodrule == SIMPLE_DECLARATION){
+                        simple_declaration(t);
+                } else if (t->prodrule == SELECTION_STATEMENT){
+                        selection_statement(t);
+                } else if (t->prodrule == FUNCTION_DEFINITION){
+                        function_definition(t);
+                } else if (t->prodrule == EXPRESSION_STATEMENT){
+                        expression(t);
+                } else if (t->prodrule == CLASS_SPECIFIER){
+                        class_specifier(t);
+                }
+                numtable++;
+        }
 }
 
 /* -----------------------------
@@ -119,7 +172,7 @@ void direct_declarator(struct tree *t){
 	if (debug == 1) printf("\t\tDIRECT_DECLARATOR\n");
 	if (t->kids[0]->nkids == 0){
 		check_ht_get(t->kids[0]);
-	} else if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
+	} if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
 		parameter_declaration_list(t->kids[2]);
 }
 }
@@ -130,26 +183,28 @@ void parameter_declaration_list(struct tree *t){
 		parameter_declaration(t->kids[1]);
 	} else if (t->prodrule == PARAMETER_DECLARATION_LIST){
 		if (debug == 1) printf("\t\tLooping through parameter_declaration_list\n");
-		parameter_declaration_list(t->kids[2]);
 		parameter_declaration_list(t->kids[0]);
+		parameter_declaration_list(t->kids[2]);
 	}	
 }
 
 void parameter_declaration(struct tree *t){
 	if (debug == 1) printf("\t\t\t\tPARAMETER_DECLARATION\n");
 	if (t->nkids == 0 && t->prodrule != ABSTRACT_DECLARATOR_OPT){
-
+		func_param++;
 		check_ht_get(t); 
-	}else if (t->nkids > 0){
+	} else if (t->nkids > 0){
 		direct_declarator(t);
 	}
 }
 
 void function_definition (struct tree *t){
 	if (debug == 1) printf("\tFUNCTION_DEFINITION\n");
+	func_global = 1;
 	if (t->kids[0]->prodrule == DIRECT_DECLARATOR){
 		direct_declarator(t->kids[0]);
 	} else if (t->prodrule == FUNCTION_DEFINITION){
+		func_global = 1;
 		currscope = t->kids[1]->kids[0]->leaf->text;
 		gtable->ltable[numtable] = ht_create(numnodes*1.5);
 		currtable = gtable->ltable[numtable];
@@ -168,14 +223,14 @@ void selection_statement(struct tree *t){
 	if (debug == 1) printf("\tSELECTION_STATEMENT\n");
 	if (t->kids[0]->leaf->category == SWITCH){
 		condition(t->kids[2]);
-		semanticAnalysis(t->kids[4]);
+		symt_populate(t->kids[4]);
 	} else if (t->kind == "selection_statement2"){
 		condition(t->kids[2]);
-		semanticAnalysis(t->kids[4]);
-		semanticAnalysis(t->kids[6]);	
+		symt_populate(t->kids[4]);
+		symt_populate(t->kids[6]);	
 	} else {
 		condition(t->kids[2]);
-		semanticAnalysis(t->kids[4]);
+		symt_populate(t->kids[4]);
 	}
 }
 
@@ -222,6 +277,7 @@ void assignment_expression(struct tree *t){
                 }*/
 		assignment_expression(t->kids[2]);
 		logical_or_expression(t->kids[0]);
+		get_type(nnode);
 	} else {
 		logical_or_expression(t);
 	}
@@ -343,6 +399,7 @@ void multiplicative_expression (struct tree *t){
 
 			numErrors++;
 		}
+		//currtype = lnode->
 		multiplicative_expression(t->kids[0]);
 		postfix_expression(t->kids[2]);
 	} else {
@@ -364,6 +421,9 @@ void postfix_expression (struct tree *t){
 		postfix_expression(t->kids[0]);
 		expression_list_opt(t->kids[2]);
 	} else {
+		nnode = t;
+		if (func_global == 1) get_type(t);
+		
 	}
 }
 
@@ -424,7 +484,7 @@ void check_ht_get(struct tree *t){
         		if (debug==1) printf("Current symbol %s\n", t->leaf->text);
 			if(debug == 1) printf("Current scope %s\n", currscope);
         		if (debug == 1)printf("Current type %d\n", t->type);
-			ht_set(currtable, t->leaf->text, currscope, t->type);
+			ht_set(currtable, t->leaf->text, currscope, t->type, func, func_param);
 		//}	
 	}
 }
@@ -445,11 +505,14 @@ void check_all_tables(struct tree *t){
 
 /* returns a ht success/fail based on data_type, rather than scope */
 void get_type(struct tree *t){
-	if (ht_get_type(currtable, t->leaf->text) == 20){
+	if (t->prodrule != INTEGER && t->prodrule != POSTFIX_EXPRESSION){
+	if ((ht_get_type(currtable, t->leaf->text) == 20) && (ht_get_type(gtable, t->leaf->text) == 20)){
 		fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
 		numErrors++;
 	} else {
 		t->type = ht_get_type(currtable, t->leaf->text);
+	}
+	
 	}
 }
 
