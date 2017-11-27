@@ -1,15 +1,17 @@
 #ifndef TREE_H_
 #define TREE_H_
 #include "globals.h"
+#include "tac.h"
 struct tree {
 	int prodrule;
 	int nkids;
 	char *kind;
-	char *code;
+	struct instr *code;
+	struct addr address;
 	int numChildren;
-	int epsilonMatched;
-	int declaredMatched;
 	int type;
+	int epsilonMatched;
+	int isFunction;
 	struct token *leaf;
 	struct tree *kids[10];
 };

@@ -37,6 +37,7 @@ struct hashtable *ht_create(int size) {
 
 /* hash a key value for a particular table */
 static int ht_hash(struct hashtable *hashtable, char *key){
+	if (debug == 2) printf("Entering ht_hash\n");
 	unsigned long int hashval = 0;
 	unsigned int i = 0;
 	while (hashval < ULONG_MAX && i < strlen(key)) {
@@ -44,11 +45,12 @@ static int ht_hash(struct hashtable *hashtable, char *key){
 		hashval += key[i];
 		i++;
 	}
+	if (debug == 2) printf("Exiting ht_hash\n");
 	return hashval % hashtable->size;
 }
 
 /* creates a new "pair" of values */ 
-static struct entry *ht_newpair(char *key, char *scope, int data_type, int func, int func_param){
+static struct entry *ht_newpair(char *key, char *scope, int data_type, int func, int param, int num_param, int param_pos){
 	struct entry *newpair;
 	if ((newpair = malloc(sizeof(struct entry))) == NULL) {
 		return NULL;
@@ -66,14 +68,16 @@ static struct entry *ht_newpair(char *key, char *scope, int data_type, int func,
 	memcpy(newpair->scope, scope, sizeof(scope));
 	newpair->data_type = data_type;
 	newpair->func = func;
-	newpair->func_param = func_param;
+	newpair->param = param;
+	newpair->num_param = num_param;
+	newpair->param_pos = param_pos;
 	//printf("key: %s, func_param: %d\n", key, func_param);
 	newpair->next = NULL;
 	return newpair;
 }
 
 /* inserts a key and values into a hash table */
-void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type, int func, int func_param) {
+void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type, int func, int param, int num_param, int param_pos) {
 	int bin = 0;
 	struct entry *next = NULL;
 	struct entry *last = NULL;
@@ -97,7 +101,7 @@ void ht_set(struct hashtable *hashtable, char *key, char *scope, int data_type, 
 	} else {
 		if(debug == 2) printf("DEBUG: Entering ht_newpair from ht_set\n");
 		struct entry *newpair = NULL;
-		newpair = ht_newpair(key, scope, data_type, func, func_param);
+		newpair = ht_newpair(key, scope, data_type, func, param, num_param, param_pos);
 		if(debug == 2) printf("DEBUG: Exiting ht_newpair into ht_set\n");
 		if (next == hashtable->table[bin]) {
 			newpair->next = next;
@@ -133,7 +137,7 @@ char *ht_get(struct hashtable *hashtable, char *key){
 int ht_get_type(struct hashtable *hashtable, char *key){
         int bin = 0;
         struct entry * pair;
-        if (debug == 2) printf("DEBUG: Entering ht_hash from ht_get\n");
+        if (debug == 2) printf("DEBUG: Entering ht_get_type from ht_get\n");
         bin = ht_hash(hashtable, key);
         pair = hashtable->table[bin];
         while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
@@ -146,7 +150,57 @@ int ht_get_type(struct hashtable *hashtable, char *key){
         }
 }
 
-int ht_function_call(struct hashtable *hasthable, char *key){
+// checks if an entry is a function, should be handed the gtable
+int ht_function(struct hashtable *hashtable, char *key){
+        int bin = 0;
+        struct entry * pair;
+        if (debug == 2) printf("DEBUG: Entering ht_function\n");
+        bin = ht_hash(hashtable, key);
+        pair = hashtable->table[bin];
+        while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+                pair = pair->next;
+        }
+        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+                return 20;
+        } else {
+                return pair->func;
+        }
+}
+
+// checks how many parameters an entry has
+int ht_param(struct hashtable *hashtable, char *key){
+        int bin = 0;
+        struct entry * pair;
+        if (debug == 2) printf("DEBUG: Entering ht_function\n");
+        bin = ht_hash(hashtable, key);
+        pair = hashtable->table[bin];
+        while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+                pair = pair->next;
+        }
+        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+                return 20;
+        } else {
+                return pair->num_param;
+        }
+}
+
+int ht_update_param(struct hashtable *hashtable, char *key, int num_param){
+	int bin = 0;
+        struct entry * pair;
+        if (debug == 2) printf("DEBUG: Entering ht_update_param\n");
+        bin = ht_hash(hashtable, key);
+        pair = hashtable->table[bin];
+        while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+                pair = pair->next;
+        }
+        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+                return 20;
+        } else {
+                pair->num_param = num_param;
+        }
+}
+
+int ht_function_call(struct hashtable *hashtable, char *key){
 	
 
 }	

@@ -19,14 +19,15 @@ int numtable = 0;
 int temp = 0;
 int type;
 int func;
-int func_param;
-int func_global;
+int param;
+int num_param;
+int param_pos;
 struct tree *lnode;
 struct tree *rnode;
 struct tree *nnode;
 struct tree * semanticAnalysis (struct tree *t){
 	func = 0;
-	func_param = 0;
+	param = 0;
 	currtable = gtable;
 	currscope = "global";
 	if (symt_populate(t)){
@@ -42,8 +43,11 @@ struct tree * semanticAnalysis (struct tree *t){
 }
 struct tree * symt_populate (struct tree *t){
 	int i, j, key;
-	func_param = 0;
+	param_global = 0;
 	func_global = 0;
+	num_param = 0;
+	param = 0;
+	param_pos = 0;
 	gtable->ltable[numtable] = currtable;
 	if (!t){
 		printf("Warning: Tree is null\n");
@@ -191,8 +195,11 @@ void parameter_declaration_list(struct tree *t){
 void parameter_declaration(struct tree *t){
 	if (debug == 1) printf("\t\t\t\tPARAMETER_DECLARATION\n");
 	if (t->nkids == 0 && t->prodrule != ABSTRACT_DECLARATOR_OPT){
-		func_param++;
+		num_param++;
+		param_pos++;
+		param_global = 1;
 		check_ht_get(t); 
+		ht_update_param(currtable, currscope, num_param);
 	} else if (t->nkids > 0){
 		direct_declarator(t);
 	}
@@ -200,16 +207,15 @@ void parameter_declaration(struct tree *t){
 
 void function_definition (struct tree *t){
 	if (debug == 1) printf("\tFUNCTION_DEFINITION\n");
-	func_global = 1;
 	if (t->kids[0]->prodrule == DIRECT_DECLARATOR){
 		direct_declarator(t->kids[0]);
 	} else if (t->prodrule == FUNCTION_DEFINITION){
-		func_global = 1;
 		currscope = t->kids[1]->kids[0]->leaf->text;
 		gtable->ltable[numtable] = ht_create(numnodes*1.5);
 		currtable = gtable->ltable[numtable];
 		assigntype(t->kids[0]);
 		currtype = t->kids[0]->type;
+		t->kids[1]->kids[0]->isFunction = 1;
 		direct_declarator(t->kids[1]);
 		}
 }
@@ -411,8 +417,11 @@ void cast_expression(struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\tCAST_EXPRESSION\n");
 	if (t->prodrule == CAST_EXPRESSION){
 		postfix_expression(t->kids[0]);
-	}	
+	} else {
+		get_type(t);
+	}
 }
+
 
 void postfix_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\tPOSTFIX_EXPRESSION\n");
@@ -422,7 +431,9 @@ void postfix_expression (struct tree *t){
 		expression_list_opt(t->kids[2]);
 	} else {
 		nnode = t;
-		if (func_global == 1) get_type(t);
+		if (param_global == 1){
+			printf("this is a param\n");
+		}
 		
 	}
 }
@@ -475,6 +486,9 @@ void check_ht_get(struct tree *t){
         		numErrors++;
 		}
 	} else {
+		if (t->isFunction == 1){
+			func = 1;
+		}
         	t->type = currtype;
 		//if(t->type == 1){
         		//fprintf(stderr, "ERROR: Symbol %s is being defined as void on line %d\n", t->leaf->text, t->leaf->lineno);
@@ -484,36 +498,105 @@ void check_ht_get(struct tree *t){
         		if (debug==1) printf("Current symbol %s\n", t->leaf->text);
 			if(debug == 1) printf("Current scope %s\n", currscope);
         		if (debug == 1)printf("Current type %d\n", t->type);
-			ht_set(currtable, t->leaf->text, currscope, t->type, func, func_param);
-		//}	
+			if (debug == 1)printf("Is function %d\n",func);
+			if (debug == 1)printf("Num params %d\n", num_param);
+			ht_set(currtable, t->leaf->text, currscope, t->type, func, param, num_param, param_pos);
+		//}		
+		func = 0;
 	}
 }
 
 /* checks all possible tables (limit 15 functions) for an etnry */
-void check_all_tables(struct tree *t){
+int check_all_tables(struct tree *t){
 	int i;
 	int flag = 0;
 	for (i = 0; i < 15; i++){
 		if ((ht_get(gtable, t->leaf->text) == NULL) && (ht_get(gtable->ltable[i], t->leaf->text) == NULL)){
 		flag++;
+		} else {
+			return 1;
 		}
 	}
-	if (flag == 15){
-		fprintf(stderr, "ERROR: Undefined function being called. Function name - %s | lineno - %d\n", t->leaf->text, t->leaf->lineno);		
-		}	
-	}		
+	return 0;	
+}		
+
+int find_function(struct tree *t){
+	int i;
+	int flag = 0;
+	for (i = 0; i < 15; i++){
+		if (gtable->ltable[i] != NULL){
+		if ((ht_function(gtable, t->leaf->text) != 1) && (ht_function(gtable->ltable[i], t->leaf->text) != 1)){
+			flag++;
+		} else {
+			func_global = 1;
+			return 1;
+		}
+		}
+	}/*
+        if (flag == 15){
+                fprintf(stderr, "ERROR: Undefined function being called. Function name - %s | lineno - %d\n", t->leaf->text, t->leaf->lineno);
+                numErrors++;
+                return 0;
+        }*/
+	return 0;
+}
+
+int find_param(struct tree *t){
+	int i; 
+	int x = 0;
+	int flag = 0;
+	for (i = 0; i < 15; i++){
+		if (gtable->ltable[i] != NULL){
+		if (ht_param(gtable, t->leaf->text) == 20){
+		} else {
+			x = ht_param(gtable, t->leaf->text); 
+			return x;
+		}
+		if (ht_param(gtable->ltable[i], t->leaf->text) == 20){
+		} else {
+			x = ht_param(gtable->ltable[i], t->leaf->text); 
+			return x;
+		}
+		}
+	}
+}
 
 /* returns a ht success/fail based on data_type, rather than scope */
 void get_type(struct tree *t){
+	if (t->kind != NULL){
+		if (strcmp(t->kind, "postfix_expression2") == 0){
+			param_global = 1;
+			expression_list_opt(t->kids[2]);
+			param_global = 0;
+		}
+	}
 	if (t->prodrule != INTEGER && t->prodrule != POSTFIX_EXPRESSION){
-	if ((ht_get_type(currtable, t->leaf->text) == 20) && (ht_get_type(gtable, t->leaf->text) == 20)){
-		fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+		find_function(t);
+		if (func_global == 0){
+			if ((ht_get_type(currtable, t->leaf->text) == 20) && (ht_get_type(gtable, t->leaf->text) == 20)){
+				fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+				numErrors++;
+			} else {
+				if (ht_get_type(currtable, t->leaf->text) != 20){
+					t->type = ht_get_type(currtable, t->leaf->text);
+				} else if (ht_get_type(gtable, t->leaf->text) != 20){
+					t->type = ht_get_type(gtable, t->leaf->text);
+				}
+			if (ht_get_type(currtable, t->leaf->text) == ht_get_type(gtable, t->leaf->text)){
+				fprintf(stderr, "ERROR: Attempting to use a symbol that is already defined globally. Duplicate entry: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+			} 
+			}
+		}
+	}
+	if (func_global == 1 && param_global == 1){
+		fprintf(stderr, "ERROR: Function being called within another function: %s | line %d\n", t->leaf->text, t->leaf->lineno);
 		numErrors++;
-	} else {
-		t->type = ht_get_type(currtable, t->leaf->text);
 	}
-	
-	}
+	if (func_global == 1 && param_global == 0 && find_param(t) > 0){
+		fprintf(stderr, "ERROR: Attempting to use a function without including parameters: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+		numErrors++;
+	}	
+	func_global = 0;
 }
 
 /* pushes down the tree to a leaf, should only be used with care, for when you know the 

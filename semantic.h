@@ -36,7 +36,8 @@ void member_specification_opt(struct tree *);
 void member_specification(struct tree *);
 void member_declaration(struct tree *);
 void check_ht_get(struct tree *);
-void check_all_tables(struct tree *);
+int check_all_tables(struct tree *);
+int find_function(struct tree *);
 void get_type(struct tree *);
 struct tree *traverse(struct tree *);
 #endif

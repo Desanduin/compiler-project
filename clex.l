@@ -128,7 +128,6 @@ struct token *nodetoken;
 "=="                    { return tokenset(EQEQ); }
 "!="                    { return tokenset(NOTEQ); }
 "::"			{ return tokenset(COLONCOLON);}
-"_"			{ return tokenset(UNDER);}
 "&"                    { return tokenset(AND); }
 "|"                    { return tokenset(OR); }
 ";"                     { return tokenset(SEMIC); }	
@@ -182,12 +181,12 @@ void namespace_include(){
 		numErrors++;
 	} else {
 	if (iostream) {
-		ht_set(gtable, "cout", "global", 1, 0, 0);
-		ht_set(gtable, "cin", "global", 1, 0, 0);
-		ht_set(gtable, "endl", "global", 1, 0, 0);
+		ht_set(gtable, "cout", "global", 1, 0, 0, 0, 0);
+		ht_set(gtable, "cin", "global", 1, 0, 0, 0, 0);
+		ht_set(gtable, "endl", "global", 1, 0, 0, 0, 0);
 	}
 	if (string){
-		ht_set(gtable, "string", "global", 1, 0, 0);
+		ht_set(gtable, "string", "global", 1, 0, 0, 0, 0);
 		
 	}
 	system_function = 1;

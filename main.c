@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		user_include = 0;
 		new_file = 0;
 		/* set to true for detailed output */
-		debug = false;
+		debug = 0;
 		while (--argc+user_include > 0) {
 		if (user_include >= 1) {
 		new_file = 1;

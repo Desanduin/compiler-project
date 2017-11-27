@@ -51,7 +51,7 @@ void initializePTR(struct tree *init){
 	init->kind = NULL;
 	init->numChildren = 0;
 	init->epsilonMatched = 0;
-	init->declaredMatched = 0;
+	init->isFunction = 0;
 	init->leaf = NULL;
 	init->type = 1;
 	int i;
