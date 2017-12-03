@@ -53,6 +53,8 @@ void initializePTR(struct tree *init){
 	init->epsilonMatched = 0;
 	init->isFunction = 0;
 	init->leaf = NULL;
+	init->code = NULL;
+	//init->address = NULL;
 	init->type = 1;
 	int i;
 	for (i = 0; i < 9; i++){

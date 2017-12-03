@@ -203,4 +203,15 @@ int ht_update_param(struct hashtable *hashtable, char *key, int num_param){
 int ht_function_call(struct hashtable *hashtable, char *key){
 	
 
-}	
+}
+
+int ht_code_init(struct hashtable *hashtable){
+	int bin = 0;
+	struct entry * pair;
+	if (debug == 2) printf("DEBUG: Entering ht_code_init\n");
+	pair = hashtable->table[0];
+	while (pair != NULL && pair->key != NULL){
+		//pair->
+		pair = pair->next;
+	}
+}

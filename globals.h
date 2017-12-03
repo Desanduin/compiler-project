@@ -24,6 +24,7 @@ typedef struct tokenl {
 char *fname;
 char *funame;
 FILE *saved_yyin;
+FILE *ic;
 int eof;
 int numErrors;
 int user_include;

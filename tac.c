@@ -41,3 +41,53 @@ struct instr *concat(struct instr *l1, struct instr *l2)
 {
    return append(copylist(l1), l2);
 }
+
+char *human_readable_op(int opcode){
+	switch(opcode){
+		case O_ADD:
+			return "add";
+		case O_SUB:
+			return "sub";
+		case O_MUL:
+			return "mul";
+		case O_DIV:
+			return "div";
+		case O_NEG:
+			return "neg";
+		case O_ASN:
+			return "asn";
+		case O_ADDR:
+			return "addr";
+		case O_LCONT:
+			return "lcont";
+		case O_SCONT:
+			return "scont";
+		case O_GOTO:
+			return "goto";
+		case O_BLT:
+			return "blt";
+		case O_BLE:
+			return "ble";
+		case O_BGT:
+			return "bgt";
+		case O_BGE:
+			return "bge";
+		case O_BEQ:
+			return "beq";
+		case O_BNE:
+			return "bne";
+		case O_BIF:
+			return "bif";
+		case O_BNIF:
+			return "bnif";
+		case O_PARM:
+			return "parm";
+		case O_CALL:
+			return "call";
+		case O_RET:
+			return "ret";
+		default:
+			printf("ERROR, calling human_readable_op with an unknown code\n");
+			break;
+	}
+}	

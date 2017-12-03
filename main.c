@@ -2,6 +2,7 @@
 #include "tree.h"
 #include "semantic.h"
 #include "symt.h"
+#include "codegen.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,17 +67,20 @@ int read(FILE *temp, int arg, char *frname) {
 	}
 	gtable = ht_create(sizeof(struct hashtable));
 	if (yyparse() == 0){
-		semanticAnalysis(savedTree);
-        for (i = 0; i < 15; i++){
-                if ((ht_get(gtable, "main") == NULL) && (ht_get(gtable->ltable[i], "main") == NULL)){
-                flag++;
-                }
-        }
-        if (flag == 15){
-                fprintf(stderr, "ERROR: main is not defined\n");
-		numErrors++;
-	}
-
+		if (semanticAnalysis(savedTree) == 0){
+			printf("semanticAnalysis passed!\n");
+        		for (i = 0; i < 15; i++){
+                		if ((ht_get(gtable, "main") == NULL) && (ht_get(gtable->ltable[i], "main") == NULL)){
+                			flag++;
+                		}
+        		}
+        		if (flag == 15){
+                		fprintf(stderr, "ERROR: main is not defined\n");
+				numErrors++;
+			}
+			printf("test\n");
+			codegen(savedTree);
+		}
 	// else something catastrophic happened. should never reach here, lexical errors
 	// and syntax errors should exit within yyparse
 	} else {

@@ -1,12 +1,12 @@
 YACC=yacc
 LEX=flex
 CC=gcc
-BIN=120++ lex.yy.o lex.yy.c tree.o tac.o type.o symt.o semantic.o  120gram.tab.h.gch 120gram.tab.c 120gram.tab.h 120gram.tab.o
+BIN=120++ lex.yy.o lex.yy.c tree.o tac.o codegen.o type.o symt.o semantic.o  120gram.tab.h.gch 120gram.tab.c 120gram.tab.h 120gram.tab.o
 
 all: 120++
 
-120++: codegen.c lex.yy.o main.c tree.o tac.o type.o symt.o semantic.o 120gram.tab.o 
-	cc -Wall -o 120++  -g codegen.c lex.yy.o main.c tac.o tree.o type.o symt.o semantic.o 120gram.tab.o 
+120++: lex.yy.o main.c tree.o tac.o type.o symt.o semantic.o codegen.o 120gram.tab.o 
+	cc -Wall -o 120++  -g lex.yy.o main.c tac.o tree.o type.o symt.o semantic.o codegen.o 120gram.tab.o 
 
 
 120gram.tab.c 120gram.tab.h: 120gram.y
@@ -34,9 +34,13 @@ symt.o: symt.c symt.h
 tac.o: tac.c tac.h
 	$(CC) -c -g tac.c
 
+codegen.o: codegen.c codegen.h
+	$(CC) -c -g codegen.c
+
 semantic.o: semantic.c semantic.h
 	$(CC) -c -g semantic.c
 
 clean:
 	rm -f $(BIN)
+	rm *.ic
 
