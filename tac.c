@@ -40,7 +40,7 @@ struct instr *append(struct instr *l1, struct instr *l2)
 
 struct instr *concat(struct instr *l1, struct instr *l2)
 {
-   return append(copylist(l1), l2);
+   	return append(copylist(l1), l2);
 }
 
 struct addr create_address(struct addr t, int region){
@@ -66,6 +66,13 @@ struct addr create_address(struct addr t, int region){
 int newlabel(){
 	label++;
 	return label;
+}
+
+struct addr newtemp(){
+	struct addr temp;
+	temp.region = R_LOCAL;
+	temp.offset = o_local + 8;
+	return temp;
 }
 
 char *human_readable_op(int opcode){

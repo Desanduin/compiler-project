@@ -13,6 +13,11 @@ struct tree {
 	int epsilonMatched;
 	int isFunction;
 	int isArray;
+	int loc;
+	int follow;
+	int first;
+	int success;
+	int fail;
 	struct token *leaf;
 	struct tree *kids[10];
 };

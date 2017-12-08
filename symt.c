@@ -165,6 +165,22 @@ int ht_get_type(struct hashtable *hashtable, char *key){
         }
 }
 
+int ht_get_address(struct hashtable *hashtable, char *key){
+        int bin = 0;
+        struct entry * pair;
+        if (debug == 2) printf("DEBUG: Entering ht_get_type from ht_get\n");
+        bin = ht_hash(hashtable, key);
+        pair = hashtable->table[bin];
+        while (pair != NULL && pair->key != NULL && strcmp(key, pair->key) > 0) {
+                pair = pair->next;
+        }
+        if (pair == NULL || pair->key == NULL || strcmp(key, pair->key) != 0) {
+                return 0;
+        } else {
+                return pair->address.offset;
+        }
+}
+
 // checks if an entry is a function, should be handed the gtable
 int ht_function(struct hashtable *hashtable, char *key){
         int bin = 0;
@@ -214,35 +230,6 @@ int ht_update_param(struct hashtable *hashtable, char *key, int data_type, int n
                 pair->num_param = num_param;
 		pair->data_type = data_type;
         }
-}
-
-int ht_function_call(struct hashtable *hashtable, char *key){
-	
-
-}
-
-int ht_code_init(struct hashtable *hashtable){
-	int bin = 0;
-	struct entry * pair;
-	if (debug == 2) printf("DEBUG: Entering ht_code_init\n");
-	pair = hashtable->table[bin];
-	while (pair != NULL && pair->key != NULL){
-		printf("hi\n");
-		if (strcmp(pair->scope,"global") == 0){
-			pair->address.region = R_GLOBAL;
-			pair->address.offset = calc_offset(o_global, pair->data_type);	
-			printf("%d\n", pair->address.offset);
-		} else if (pair->param == 1){
-			pair->address.region = R_PARAM;
-			pair->address.offset = calc_offset(o_param, pair->data_type);
-		} else {
-			pair->address.region = R_LOCAL;
-			pair->address.offset = calc_offset(o_local, pair->data_type);
-			printf("%d\n", pair->address.offset);
-		}
-		pair = pair->next;
-	}
-	return 1;
 }
 
 int calc_offset(int offset, int data_type){
