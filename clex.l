@@ -9,6 +9,7 @@ intsuffix	([uU][lL]?)|([lL][uU]?)
 fracconst 	([0-9]*\.[0-9]+)|([0-9]+\.)
 exppart		[eE][-+]?[0-9]+
 floatsuffix	[fFlL]
+chartext				([^'])|(\\.)
 FS       (f|F|l|L)
 IS       (u|U|l|L)
 W        [ \t\f]*
@@ -96,6 +97,9 @@ struct token *nodetoken;
 
 {fracconst}{exppart}?{floatsuffix}?	{ return tokenset(FLOATING); }
 [0-9]+{exppart}{floatsuffix}?		{ return tokenset(FLOATING); }
+
+"'"{chartext}*"'"			{ return tokenset(CHARACTER); }
+"L'"{chartext}*"'"			{ return tokenset(CHARACTER); }
 
 {COMMENT}		{ }
 

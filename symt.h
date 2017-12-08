@@ -1,5 +1,6 @@
 #ifndef SYM_H
 #define SYM_H
+#include "tac.h"
 struct entry {
 	char *key;
 	char *scope;
@@ -8,6 +9,7 @@ struct entry {
 	int param;
 	int size;
 	int num_param;
+	struct addr address;
 	int param_pos;
 	struct entry *next;
 }; 
@@ -29,5 +31,5 @@ struct hashtable *ht_create( int);
 int ht_code_init(struct hashtable *);
 int ht_function(struct hashtable *, char *);
 int ht_param(struct hashtable *, char *);
-int ht_update_param(struct hashtable *, char *, int);
+int ht_update_param(struct hashtable *, char *, int, int);
 #endif

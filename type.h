@@ -4,4 +4,5 @@
 #include "globals.h"
 struct tree *assigntype (struct tree *);
 char *typechar (struct tree *);
+int return_size(int);
 #endif

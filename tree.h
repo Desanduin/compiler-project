@@ -12,6 +12,7 @@ struct tree {
 	int type;
 	int epsilonMatched;
 	int isFunction;
+	int isArray;
 	struct token *leaf;
 	struct tree *kids[10];
 };

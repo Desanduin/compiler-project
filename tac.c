@@ -3,8 +3,9 @@
  *   */
 #include <stdio.h>
 #include <stdlib.h>
+#include "globals.h"
 #include "tac.h"
-
+int label;
 struct instr *gen(int op, struct addr a1, struct addr a2, struct addr a3)
 {
   struct instr *rv = malloc(sizeof (struct instr));
@@ -40,6 +41,31 @@ struct instr *append(struct instr *l1, struct instr *l2)
 struct instr *concat(struct instr *l1, struct instr *l2)
 {
    return append(copylist(l1), l2);
+}
+
+struct addr create_address(struct addr t, int region){
+	switch(region){
+		case R_GLOBAL:
+			t.region = R_GLOBAL;
+			t.offset = t.offset + o_global;
+			o_global = o_global + 8;
+			return t;
+		break;
+		case R_LOCAL:
+			t.region = R_LOCAL;
+			t.offset = t.offset + o_local;
+			o_local = o_local + 8;
+			return t;
+		break;
+		default:
+			if (debug == 1) printf("ERROR: Hit default in create_addres\n");
+		break;
+	}	
+}
+
+int newlabel(){
+	label++;
+	return label;
 }
 
 char *human_readable_op(int opcode){
@@ -87,7 +113,7 @@ char *human_readable_op(int opcode){
 		case O_RET:
 			return "ret";
 		default:
-			printf("ERROR, calling human_readable_op with an unknown code\n");
+			if (debug == 1) printf("ERROR, calling human_readable_op with an unknown code\n");
 			break;
 	}
 }	

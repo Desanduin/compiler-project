@@ -27,6 +27,9 @@ int main(int argc, char *argv[]) {
 	depth = 0;
 	numErrors = 0;
 	flag = 0;
+	o_global = 0;
+	 o_local = 0;
+	o_param = 0;
 	analysisPass = 0;
 	savedTree = NULL;
 	if (argc == 0) {
@@ -37,7 +40,7 @@ int main(int argc, char *argv[]) {
 		user_include = 0;
 		new_file = 0;
 		/* set to true for detailed output */
-		debug = 0;
+		debug = 1;
 		while (--argc+user_include > 0) {
 		if (user_include >= 1) {
 		new_file = 1;
@@ -67,19 +70,28 @@ int read(FILE *temp, int arg, char *frname) {
 	}
 	gtable = ht_create(sizeof(struct hashtable));
 	if (yyparse() == 0){
+		//treeprint(savedTree, 0);
 		if (semanticAnalysis(savedTree) == 0){
-			printf("semanticAnalysis passed!\n");
-        		for (i = 0; i < 15; i++){
-                		if ((ht_get(gtable, "main") == NULL) && (ht_get(gtable->ltable[i], "main") == NULL)){
+			if (debug == 1) printf("semanticAnalysis passed!\n");
+			if (gtable != NULL){
+			if (ht_get(gtable, "main") == NULL){
+				flag++;
+			}
+			}
+        		for (i = 0; i < 14; i++){
+				if (gtable->ltable[i] != NULL){
+                		if (ht_get(gtable->ltable[i], "main") == NULL){
                 			flag++;
                 		}
+				}
         		}
         		if (flag == 15){
                 		fprintf(stderr, "ERROR: main is not defined\n");
 				numErrors++;
 			}
-			printf("test\n");
 			codegen(savedTree);
+		} else {
+			if (debug == 1) printf("semanticAnalysis failed\n");
 		}
 	// else something catastrophic happened. should never reach here, lexical errors
 	// and syntax errors should exit within yyparse
@@ -88,7 +100,6 @@ int read(FILE *temp, int arg, char *frname) {
 		exit(1);
 	}
 	yylineno = 1;
-	//fclose(yyin);
 	return 0;
 }
 

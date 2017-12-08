@@ -14,6 +14,7 @@ struct addr {
 #define R_CLASS  2003 /* can assemble as relative to the 'this' register */
 #define R_LABEL  2004 /* pseudo-region for labels in the code region */
 #define R_CONST  2005 /* pseudo-region for immediate mode constants */
+#define R_PARAM	 2006 
 
 struct instr {
    int opcode;
@@ -49,7 +50,8 @@ struct instr {
 #define D_LABEL 3054
 #define D_END   3055
 
+
 struct instr *gen(int, struct addr, struct addr, struct addr);
 struct instr *concat(struct instr *, struct instr *);
-
+struct addr create_address(struct addr, int region);
 #endif

@@ -51,3 +51,19 @@ char *typechar(struct tree *t){
         }
 }
 
+// hardcoding these since we're in a rush
+int return_size(int data_type){
+	switch (data_type){
+		// integers are size 8
+		case 2:
+			return 8;
+		// characters are size 1
+		case 4:
+			return 1;
+		// integers are size 8
+		case 10:
+			return 8;
+		default:
+			return;
+	}
+}

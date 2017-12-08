@@ -3,6 +3,7 @@
 #include "semantic.h"
 #include "globals.h"
 #include "type.h"
+#include "tac.h"
 #include "120gram.tab.h"
 #include "gram_rules.h"
 #include <stdlib.h>
@@ -10,6 +11,7 @@
 //struct hashtable *gtable;
 struct hashtable *currtable;
 char *currscope;
+char *func_scope;
 int currtype;
 // used to list the order of function parameters`
 int currorder;
@@ -17,6 +19,7 @@ int currorder;
 int currmember;
 int numtable = 0;
 int temp = 0;
+int func_def;
 int type;
 int func;
 int param;
@@ -30,10 +33,11 @@ struct tree * semanticAnalysis (struct tree *t){
 	param = 0;
 	currtable = gtable;
 	currscope = "global";
+	func_scope = "global";
 	if (symt_populate(t)){
 		if (debug == 1) printf("Symbol table population pass successful. Starting type checking\n");
 		if (/*type_check(t)*/ temp == 200){
-			if (debug == 1) printf("Type checking successful. Leaving semanticAnalysis.\n");
+			if (debug == 1) printf("Type checking successful. Leaving semanticAnalysis.\n"); return 0;
 		} else {
 			if (debug == 1) printf("DEBUG: Type checking was not successful.\n");
 		} 
@@ -64,6 +68,7 @@ struct tree * symt_populate (struct tree *t){
 				break;
 			case FUNCTION_DEFINITION:
 				function_definition(t);
+				numtable++;
 				break;
 			case EXPRESSION_STATEMENT:
 				expression(t);
@@ -74,7 +79,7 @@ struct tree * symt_populate (struct tree *t){
 			default: 
 				break;
 		}		
-		numtable++;
+		//numtable++;
 		for (j=0; j < t->nkids; j++){
 			symt_populate(t->kids[j]);
 		}
@@ -176,14 +181,21 @@ void direct_declarator(struct tree *t){
 	if (debug == 1) printf("\t\tDIRECT_DECLARATOR\n");
 	if (t->kids[0]->nkids == 0){
 		check_ht_get(t->kids[0]);
-	} if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
+	}
+	if (t->kids[0]->prodrule == DECLARATOR){
+		declarator(t->kids[0]);
+	} else if (t->prodrule == ABSTRACT_DECLARATOR){
+		declarator(t);
+	} else if (t->kids[2]->prodrule == PARAMETER_DECLARATION_LIST || t->kids[2]->prodrule == PARAMETER_DECLARATION){
 		parameter_declaration_list(t->kids[2]);
-}
+	}
 }
 
 void parameter_declaration_list(struct tree *t){
 	if (debug == 1) printf("\t\t\tPARAMETER_DECLARATION_LIST\n");
 	if (t->prodrule == PARAMETER_DECLARATION){
+		assigntype(t->kids[0]);
+		currtype = t->kids[0]->type;	
 		parameter_declaration(t->kids[1]);
 	} else if (t->prodrule == PARAMETER_DECLARATION_LIST){
 		if (debug == 1) printf("\t\tLooping through parameter_declaration_list\n");
@@ -199,7 +211,7 @@ void parameter_declaration(struct tree *t){
 		param_pos++;
 		param_global = 1;
 		check_ht_get(t); 
-		ht_update_param(currtable, currscope, num_param);
+		ht_update_param(currtable, currscope, currtype, num_param);
 	} else if (t->nkids > 0){
 		direct_declarator(t);
 	}
@@ -210,6 +222,8 @@ void function_definition (struct tree *t){
 	if (t->kids[0]->prodrule == DIRECT_DECLARATOR){
 		direct_declarator(t->kids[0]);
 	} else if (t->prodrule == FUNCTION_DEFINITION){
+		func_scope = t->kids[1]->kids[0]->leaf->text;
+		func_def = 1;
 		currscope = t->kids[1]->kids[0]->leaf->text;
 		gtable->ltable[numtable] = ht_create(numnodes*1.5);
 		currtable = gtable->ltable[numtable];
@@ -426,13 +440,16 @@ void cast_expression(struct tree *t){
 void postfix_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\tPOSTFIX_EXPRESSION\n");
 	if (t->prodrule == POSTFIX_EXPRESSION){
+		if (strcmp(t->kind, "postfix_expression1") == 0){
+			t->isArray = 1;
+		}
 		check_all_tables(t->kids[0]);
 		postfix_expression(t->kids[0]);
 		expression_list_opt(t->kids[2]);
 	} else {
 		nnode = t;
 		if (param_global == 1){
-			printf("this is a param\n");
+			if (debug == 1) printf("this is a param\n");
 		}
 		
 	}
@@ -481,13 +498,15 @@ void member_declaration(struct tree *t){
 /* primary function to do simple ht lookups */
 void check_ht_get(struct tree *t){
 	if (ht_get(currtable, t->leaf->text) != NULL){
-			if (strcmp(currscope, ht_get(currtable, t->leaf->text)) == 0){
+			if (strcmp(func_scope, ht_get(currtable, t->leaf->text)) == 0){
 			fprintf(stderr, "ERROR: Symbol %s is already defined. Duplicate declaration on line %d\n", t->leaf->text, t->leaf->lineno);
         		numErrors++;
 		}
 	} else {
 		if (t->isFunction == 1){
 			func = 1;
+			currscope = func_scope;
+			func_scope = "global";
 		}
         	t->type = currtype;
 		//if(t->type == 1){
@@ -496,25 +515,35 @@ void check_ht_get(struct tree *t){
 		//} else {
 			if (debug == 1) printf("---------\nPUTTING NEW SYMBOL INTO A TABLE\n---------\n");
         		if (debug==1) printf("Current symbol %s\n", t->leaf->text);
-			if(debug == 1) printf("Current scope %s\n", currscope);
+			if(debug == 1) printf("Current scope %s\n", func_scope);
         		if (debug == 1)printf("Current type %d\n", t->type);
 			if (debug == 1)printf("Is function %d\n",func);
+			if (debug == 1) printf("Is array %d\n", t->isArray);
 			if (debug == 1)printf("Num params %d\n", num_param);
-			ht_set(currtable, t->leaf->text, currscope, t->type, func, param, num_param, param_pos);
+			ht_set(currtable, t->leaf->text, func_scope, t->type, func, param, num_param, param_pos);
 		//}		
 		func = 0;
+		func_def = 0;
+		func_scope = currscope;
 	}
 }
 
 /* checks all possible tables (limit 15 functions) for an etnry */
 int check_all_tables(struct tree *t){
+	if (debug == 1) printf("DEBUG: In check_all_tables \n");
 	int i;
-	int flag = 0;
-	for (i = 0; i < 15; i++){
-		if ((ht_get(gtable, t->leaf->text) == NULL) && (ht_get(gtable->ltable[i], t->leaf->text) == NULL)){
-		flag++;
-		} else {
-			return 1;
+	if (gtable != NULL){
+	if (ht_get(gtable, t->leaf->text) == NULL){
+	} else {
+		return 1;
+	}
+	}
+	for (i = 0; i < 14; i++){
+		if (gtable->ltable[i] != NULL){
+			if (ht_get(gtable->ltable[i], t->leaf->text) == NULL){
+			} else {
+				return 1;
+			}
 		}
 	}
 	return 0;	
