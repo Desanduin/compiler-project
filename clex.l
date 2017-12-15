@@ -112,6 +112,8 @@ struct token *nodetoken;
 "#include <ctime>"	{ ctime = 1;}
 "#include <cmath>"	{ cmath = 1;}
 
+"#include"		{ printf("No include file specified. Did you forget a filename?\n");}
+
 ">>="                   { return tokenset(SREQ); }
 "<<="                   { return tokenset(SLEQ); }
 "+="                    { return tokenset(ADDEQ); }

@@ -52,6 +52,9 @@ struct tree * symt_populate (struct tree *t){
 	num_param = 0;
 	param = 0;
 	param_pos = 0;
+	t->address.offset = 0;
+	t->address.region = 0;
+	t->address.constant = 0;
 	gtable->ltable[numtable] = currtable;
 	if (!t){
 		printf("Warning: Tree is null\n");
@@ -126,11 +129,24 @@ void simple_declaration (struct tree *t){
 		currtype = t->kids[0]->type;
 	}
 	if (t->kids[1]->prodrule == INIT_DECLARATOR_LIST || t->kids[1]->prodrule == INIT_DECLARATOR){
+		
+		if (t->kids[1]->kids[0]->kids[0] != NULL && t->kids[1]->kids[0]->kids[0]->leaf != NULL){
+		func_scope = t->kids[1]->kids[0]->kids[0]->leaf->text;
+		func_def = 1;
+		currscope = t->kids[1]->kids[0]->kids[0]->leaf->text;
+		gtable->ltable[numtable] = ht_create(numnodes*1.5);
+		currtable = gtable->ltable[numtable];
+		t->kids[1]->kids[0]->kids[0]->isFunction = 1;
 		init_declarator_list(t->kids[1]);
-	}		
+		}
+		else {
+			init_declarator_list(t->kids[1]);
+		}
+	}
 }
 
 void decl_specifier_seq (struct tree *t){
+	if (debug == 1) printf("\t\tDECL_SPECIFIER_SEQ\n");
 	if (t->prodrule == DECL_SPECIFIER_SEQ){
 		decl_specifier_seq(t->kids[0]);
 		check_ht_get(t->kids[1]);
@@ -392,16 +408,22 @@ void shift_expression (struct tree *t){
 void additive_expression (struct tree *t){
 	if (debug == 1) printf("\t\t\t\t\t\t\t\t\t\tADDITIVE_EXPRESSION\n");
 	if (t->prodrule == ADDITIVE_EXPRESSION){
+		if (t->kids[0]->prodrule == MULTIPLICATIVE_EXPRESSION){
+			multiplicative_expression(t->kids[0]);
+		} else if (t->kids[2]->prodrule == MULTIPLICATIVE_EXPRESSION){
+			multiplicative_expression(t->kids[2]);
+		} else {
 		get_type(t->kids[0]->kids[0]);
 		get_type(t->kids[2]->kids[0]);
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
-		if (lnode->type != rnode->type){
+		if (lnode->type != rnode->type && rnode->leaf != NULL && lnode->leaf != NULL){
                         fprintf(stderr, "ERROR: Attempting to add or subtract two symbols together of differing types. lsymbol type - %s | text - %s | lineno %d, rsymbol type - %s | text - %s | lineno %d\n", typechar(lnode), lnode->leaf->text, lnode->leaf->lineno, typechar(rnode), rnode->leaf->text, rnode->leaf->lineno);
 			numErrors++;
 		}
 		additive_expression(t->kids[0]);
 		multiplicative_expression(t->kids[2]);
+		}
 	} else {
 		multiplicative_expression(t);
 	}
@@ -414,7 +436,7 @@ void multiplicative_expression (struct tree *t){
 		get_type(t->kids[2]->kids[0]);
 		lnode = t->kids[0]->kids[0];
 		rnode = t->kids[2]->kids[0];
-		if (lnode->type != rnode->type){
+		if (lnode->type != rnode->type && rnode->leaf != NULL && lnode->leaf != NULL){
                         fprintf(stderr, "ERROR: Attempting to multiply, divide, or mod two symbols together of differing types. lsymbol type - %s | text - %s | lineno %d, rsymbol type - %s | text - %s | lineno %d\n", typechar(lnode), lnode->leaf->text, lnode->leaf->lineno, typechar(rnode), rnode->leaf->text, rnode->leaf->lineno);
 
 			numErrors++;
@@ -539,7 +561,7 @@ int check_all_tables(struct tree *t){
 	}
 	}
 	for (i = 0; i < 14; i++){
-		if (gtable->ltable[i] != NULL){
+		if (gtable->ltable[i] != NULL && t->leaf != NULL){
 			if (ht_get(gtable->ltable[i], t->leaf->text) == NULL){
 			} else {
 				return 1;
@@ -553,13 +575,13 @@ int find_function(struct tree *t){
 	int i;
 	int flag = 0;
 	for (i = 0; i < 15; i++){
-		if (gtable->ltable[i] != NULL){
-		if ((ht_function(gtable, t->leaf->text) != 1) && (ht_function(gtable->ltable[i], t->leaf->text) != 1)){
+		if (gtable->ltable[i] != NULL && t->leaf != NULL){
+			if ((ht_function(gtable, t->leaf->text) != 1) && (ht_function(gtable->ltable[i], t->leaf->text) != 1)){
 			flag++;
-		} else {
-			func_global = 1;
-			return 1;
-		}
+			} else {
+				func_global = 1;
+				return 1;
+			}
 		}
 	}/*
         if (flag == 15){
@@ -602,20 +624,26 @@ void get_type(struct tree *t){
 	if (t->prodrule != INTEGER && t->prodrule != POSTFIX_EXPRESSION){
 		find_function(t);
 		if (func_global == 0){
-			if ((ht_get_type(currtable, t->leaf->text) == 20) && (ht_get_type(gtable, t->leaf->text) == 20)){
-				fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
-				numErrors++;
-			} else {
-				if (ht_get_type(currtable, t->leaf->text) != 20){
-					t->type = ht_get_type(currtable, t->leaf->text);
-				} else if (ht_get_type(gtable, t->leaf->text) != 20){
-					t->type = ht_get_type(gtable, t->leaf->text);
-				}
+			if (t->leaf != NULL){
+				if ((ht_get_type(currtable, t->leaf->text) == 20) && (ht_get_type(gtable, t->leaf->text) == 20)){
+					fprintf(stderr, "ERROR: Attempting to use symbol that is not defined: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+					numErrors++;
+				} else {
+					if (ht_get_type(currtable, t->leaf->text) != 20){
+						t->type = ht_get_type(currtable, t->leaf->text);
+					} else if (ht_get_type(gtable, t->leaf->text) != 20){
+						t->type = ht_get_type(gtable, t->leaf->text);
+					}
 			if (ht_get_type(currtable, t->leaf->text) == ht_get_type(gtable, t->leaf->text)){
-				fprintf(stderr, "ERROR: Attempting to use a symbol that is already defined globally. Duplicate entry: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+				//fprintf(stderr, "ERROR: Attempting to use a symbol that is already defined globally. Duplicate entry: %s | line %d\n", t->leaf->text, t->leaf->lineno);
+				//numErrors++;
 			} 
 			}
+			}
 		}
+	}
+	if (t->prodrule == INTEGER){
+		t->type = 2;
 	}
 	if (func_global == 1 && param_global == 1){
 		fprintf(stderr, "ERROR: Function being called within another function: %s | line %d\n", t->leaf->text, t->leaf->lineno);

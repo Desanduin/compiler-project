@@ -35,7 +35,7 @@ struct instr *append(struct instr *l1, struct instr *l2)
    struct instr *ltmp = l1;
    while(ltmp->next != NULL) ltmp = ltmp->next;
    ltmp->next = l2;
-   return l1;
+	return l1;
 }
 
 struct instr *concat(struct instr *l1, struct instr *l2)

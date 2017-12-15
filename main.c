@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 		user_include = 0;
 		new_file = 0;
 		/* set to true for detailed output */
-		debug = 1;
+		debug = 0;
 		while (--argc+user_include > 0) {
 		if (user_include >= 1) {
 		new_file = 1;
@@ -52,12 +52,8 @@ int main(int argc, char *argv[]) {
 		}
 		}
 	}
-        if (numErrors > 0){
- 	printf("Number of Errors: %d\n", numErrors);
- 	exit(3);
- 	}
-
 	free(fname);
+	printf("120++ has finished\n");
 	return 0;
 }
 
@@ -67,6 +63,8 @@ int read(FILE *temp, int arg, char *frname) {
 	if ((yyin = fopen(frname, "r")) == NULL) {
         	printf("Can't open %s\n", frname);
         	return 1;
+	} else {
+		printf("Opening %s\n", frname);
 	}
 	gtable = ht_create(sizeof(struct hashtable));
 	if (yyparse() == 0){
@@ -89,6 +87,11 @@ int read(FILE *temp, int arg, char *frname) {
                 		fprintf(stderr, "ERROR: main is not defined\n");
 				numErrors++;
 			}
+			if (numErrors > 0){
+			        printf("Number of Errors: %d\n", numErrors);
+        			exit(3);
+        		}
+
 			codegen(savedTree);
 		} else {
 			if (debug == 1) printf("semanticAnalysis failed\n");

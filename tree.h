@@ -13,6 +13,7 @@ struct tree {
 	int epsilonMatched;
 	int isFunction;
 	int isArray;
+	int isConstant;
 	int loc;
 	int follow;
 	int first;

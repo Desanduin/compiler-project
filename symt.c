@@ -76,14 +76,12 @@ static struct entry *ht_newpair(char *key, char *scope, int data_type, int func,
         if (strcmp(newpair->scope,"global") == 0){
         	newpair->address.region = R_GLOBAL;
                 newpair->address.offset = calc_offset(1, newpair->data_type);
-                printf("%d\n", newpair->address.offset);
                 } else if (newpair->param == 1){
                         newpair->address.region = R_PARAM;
                         newpair->address.offset = calc_offset(2, newpair->data_type);
                 } else {
                         newpair->address.region = R_LOCAL;
                         newpair->address.offset = calc_offset(3, newpair->data_type);
-                        printf("%d\n", newpair->address.offset);
 	}
 	//printf("key: %s, func_param: %d\n", key, func_param);
 	newpair->next = NULL;
@@ -165,6 +163,8 @@ int ht_get_type(struct hashtable *hashtable, char *key){
         }
 }
 
+// returns the stored address offset (.loc/.place) 
+// form the supplied table and key
 int ht_get_address(struct hashtable *hashtable, char *key){
         int bin = 0;
         struct entry * pair;

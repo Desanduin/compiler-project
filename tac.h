@@ -5,7 +5,7 @@
 #define TAC_H
 
 struct addr {
-  int region, offset;
+  int region, offset, constant, lab;
 };
 
 /* Regions: */
@@ -18,6 +18,8 @@ struct addr {
 
 struct instr {
    int opcode;
+   int rConst;
+int lConst;
    struct addr dest, src1, src2;
    struct instr *next;
 };
